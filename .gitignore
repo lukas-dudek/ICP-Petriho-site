@@ -1,0 +1,33 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Build directory (as defined in Makefile)
+build/
+
+# Doxygen generated documentation
+doc/html/
+doc/latex/
+
+# Linter and IDE configurations
+compile_flags.txt
+compile_commands.json
+.vscode/
+.idea/
+*.user
+
+# macOS specific
+.DS_Store
+
+# Submission archives
+*.zip
+*.tar.gz
+*.rar
