@@ -42,3 +42,19 @@ void PetriNetView::wheelEvent(QWheelEvent* event)
         QGraphicsView::wheelEvent(event);
     }
 }
+
+void PetriNetView::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        setDragMode(QGraphicsView::RubberBandDrag);
+    } else {
+        setDragMode(QGraphicsView::NoDrag);
+    }
+    QGraphicsView::mousePressEvent(event);
+}
+
+void PetriNetView::mouseReleaseEvent(QMouseEvent* event)
+{
+    QGraphicsView::mouseReleaseEvent(event);
+    setDragMode(QGraphicsView::NoDrag);
+}

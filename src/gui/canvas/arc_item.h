@@ -12,6 +12,7 @@ class ArcItem : public QGraphicsPathItem
 public:
     ArcItem(PlaceItem* fromPlace, TransitionItem* toTransition, int weight = 1);
     ArcItem(TransitionItem* fromTransition, PlaceItem* toPlace, int weight = 1);
+    ~ArcItem() override;
 
     bool isInputArc() const { return is_input_; }
     bool isOutputArc() const { return !is_input_; }
@@ -26,6 +27,9 @@ public:
 
     enum { Type = QGraphicsItem::UserType + 3 };
     int type() const override { return Type; }
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
     PlaceItem*      place_      = nullptr;

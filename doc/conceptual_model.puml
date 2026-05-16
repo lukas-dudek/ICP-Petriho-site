@@ -1,0 +1,90 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "Model (C++)" {
+    class PetriNet {
+        +places: vector<Place>
+        +transitions: vector<Transition>
+        +inputs: vector<string>
+        +outputs: vector<string>
+        +variables: map<string, string>
+    }
+    class Place {
+        +id: string
+        +initial_tokens: int
+        +current_tokens: int
+        +action_code: string
+    }
+    class Transition {
+        +id: string
+        +input_arcs: vector<Arc>
+        +output_arcs: vector<Arc>
+        +input_event_name: string
+        +guard_expression: string
+        +delay_ms: int64
+        +action_code: string
+    }
+    class Arc {
+        +place: Place*
+        +weight: int
+    }
+    PetriNet *-- Place
+    PetriNet *-- Transition
+    Transition *-- Arc
+    Arc o-- Place
+}
+
+package "Interpreter (JIT Engine)" {
+    class Interpreter {
+        +start()
+        +stop()
+        +handle_input_event()
+        -main_loop()
+        -fire_transition()
+    }
+    class InscriptionEngine {
+        +compile_guard()
+        +compile_action()
+        +evaluate_guard()
+        +execute_action()
+    }
+    class TimerManager {
+        +schedule()
+        +get_expired()
+        +next_expiry_ms()
+    }
+    class EventQueue {
+        +push()
+        +wait()
+        +wait_for()
+    }
+    Interpreter --> PetriNet
+    Interpreter *-- InscriptionEngine
+    Interpreter *-- TimerManager
+    Interpreter *-- EventQueue
+}
+
+package "GUI (Qt5)" {
+    class MainWindow {
+        +onRun()
+        +onStop()
+        +injectInput()
+    }
+    class PetriNetScene {
+        +addPlace()
+        +addTransition()
+        +addArc()
+    }
+    class PlaceItem
+    class TransitionItem
+    class ArcItem
+    
+    MainWindow *-- PetriNetScene
+    PetriNetScene *-- PlaceItem
+    PetriNetScene *-- TransitionItem
+    PetriNetScene *-- ArcItem
+}
+
+MainWindow --> Interpreter : controls
+MainWindow --> PetriNet : serializes/deserializes
+@enduml

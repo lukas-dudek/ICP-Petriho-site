@@ -1,0 +1,24 @@
+Jméno sítě:
+    TOF_PN_5s
+Komentář:
+    Zpožděný přepínač TOF s delay 5000 ms
+Vstupy:
+    in
+Výstupy:
+    rt
+Proměnné:
+    int timeout = 5000
+Místa:
+    P_idle (1)
+    P_active (0)
+Přechody:
+T_on :
+    in:  P_idle*1
+    out: P_active*1
+    when: in [ defined_in ]
+    do: {  }
+T_off :
+    in:  P_active*1
+    out: P_idle*1
+    when: @ 5000
+    do: { output("rt", "1"); }

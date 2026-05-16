@@ -18,6 +18,8 @@ public:
 
 protected:
     void wheelEvent(QWheelEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
 private:
     qreal current_zoom_ = 1.0;

@@ -17,7 +17,7 @@ test:
 	$(MAKE) -C src test
 
 pack: clean
-	zip -r xname01-xname02-xname03.zip src examples doc README.txt Makefile zadani.txt implementacni_plan.md Lukas-plan.md
+	zip -r xname01-xname02-xname03.zip src examples doc README.txt Makefile .gitignore
 
 doxygen:
-	doxygen Doxyfile
+	doxygen Doxyfile 2>/dev/null || echo "Doxyfile not found - skipping"

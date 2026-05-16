@@ -159,7 +159,7 @@ void Interpreter::main_loop()
         int64_t next_timeout = timer_manager_.next_expiry_ms();
         Event event;
 
-        if (next_timeout > 0) {
+        if (next_timeout >= 0) {
             // Čekej do nejbližšího timeoutu, nebo na externí událost
             bool got_event = event_queue_.wait_for(next_timeout, event);
 
@@ -440,6 +440,7 @@ void Interpreter::handle_timeout(Transition* t)
 
 void Interpreter::handle_input_event(const std::string& name, const std::string& value)
 {
+    
     auto* input = net_.find_input(name);
     if (!input) {
         log(LogType::INFO,

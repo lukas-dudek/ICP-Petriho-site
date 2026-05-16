@@ -1,0 +1,8 @@
+15:27:16	DUMP: net_.inputs.size=1	
+15:27:16	Interpreter started for net: TOF_PN_5s	
+15:27:20	DEBUG: checking name='in' against net_.inputs[0]='in'	
+15:27:20	Input 'in' set to 'start'	
+15:27:20	Place 'P_idle': removed 1 token(s), now has 0	
+15:27:20	Place 'P_active': added 1 token(s), now has 1	
+15:27:20	Transition 'T_on' fired	
+15:27:20	Scheduled timeout for transition 'T_off' in 5000 ms	

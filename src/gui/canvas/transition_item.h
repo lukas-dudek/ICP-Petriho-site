@@ -3,6 +3,8 @@
 
 #include <QGraphicsRectItem>
 #include <QGraphicsTextItem>
+#include <QString>
+#include <cstdint>
 
 enum class HighlightType {
     Normal,
@@ -11,22 +13,62 @@ enum class HighlightType {
     Firing
 };
 
+class ArcItem; // forward deklarace
+
+/**
+ * @brief Grafická reprezentace přechodu (transition) v Petriho síti.
+ * @author Jan
+ */
 class TransitionItem : public QGraphicsRectItem
 {
 public:
     explicit TransitionItem(const QString& id);
 
     QString transitionId() const { return id_; }
+    void    setTransitionId(const QString& id);
     void    setHighlight(HighlightType type);
     HighlightType highlight() const { return highlight_; }
 
+    // Editovatelné vlastnosti
+    void    setInputEvent(const QString& e)    { input_event_ = e; }
+    QString inputEvent() const                  { return input_event_; }
+
+    void    setGuardExpression(const QString& g){ guard_expression_ = g; }
+    QString guardExpression() const             { return guard_expression_; }
+
+    void    setDelayMs(int64_t d)               { delay_ms_ = d; }
+    int64_t delayMs() const                     { return delay_ms_; }
+    bool    hasDelay() const                    { return delay_ms_ > 0; }
+
+    void    setActionCode(const QString& c)     { action_code_ = c; }
+    QString actionCode() const                  { return action_code_; }
+
+    void    setPriority(int p)                   { priority_ = p; }
+    int     priority() const                     { return priority_; }
+
+    void addArc(ArcItem* arc);
+    void removeArc(ArcItem* arc);
+
     enum { Type = QGraphicsItem::UserType + 2 };
     int type() const override { return Type; }
+
+protected:
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
     QString       id_;
     HighlightType highlight_ = HighlightType::Normal;
     QGraphicsTextItem* label_ = nullptr;
+
+    // Editovatelné vlastnosti přechodu
+    QString input_event_;
+    QString guard_expression_;
+    int64_t delay_ms_ = 0;
+    QString action_code_;
+    int     priority_ = 0;
+
+    QList<ArcItem*> arcs_;
 };
 
 #endif

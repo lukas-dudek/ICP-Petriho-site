@@ -9,24 +9,30 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <memory>
+
 #include "interpreter/runtime_state.h"
 #include "interpreter/log_entry.h"
 
 using pets::RuntimeState;
 using pets::LogEntry;
 
+namespace pets {
+    class PetriNet;
+    class Interpreter;
+}
+
 class PetriNetScene;
 class PetriNetView;
 class LogPanel;
 class InjectionPanel;
 class StateOverviewPanel;
-class StateReceiver;
 
 /**
  * @brief Hlavní okno aplikace.
  *
  * Spravuje přepínání mezi editačním a monitorovacím režimem,
- * menu, toolbar a dokovací panely.
+ * menu, toolbar a dokovací panely. Drží vlastnictví interpreteru.
  */
 class MainWindow : public QMainWindow
 {
@@ -62,6 +68,9 @@ private slots:
     void onRuntimeStateReceived(const RuntimeState& state);
     void onLogEntryReceived(const LogEntry& entry);
 
+    // === Injekce ===
+    void onInjectInput(const QString& inputName, const QString& value);
+
     // === View ===
     void onZoomIn();
     void onZoomOut();
@@ -77,6 +86,12 @@ private:
     void updateWindowTitle();
     void updateActionsForMode();
 
+    /// Sestaví PetriNet model z aktuální scény
+    std::unique_ptr<pets::PetriNet> sceneToModel() const;
+
+    /// Načte PetriNet model do scény
+    void modelToScene(const pets::PetriNet& net);
+
     // === Hlavní komponenty ===
     PetriNetScene*      scene_ = nullptr;
     PetriNetView*       view_  = nullptr;
@@ -86,15 +101,25 @@ private:
     InjectionPanel*     injection_panel_    = nullptr;
     StateOverviewPanel* state_overview_     = nullptr;
 
-    // === IPC ===
-    StateReceiver*      receiver_        = nullptr;
-    QThread*            receiver_thread_ = nullptr;
+    // === Interpreter (in-process) ===
+    std::unique_ptr<pets::Interpreter> interpreter_;
 
     // === Stav ===
     QString current_file_path_;
     bool    is_modified_ = false;
     bool    is_running_  = false;
     bool    is_connected_ = false;
+
+    // === Síťová metadata (z editace) ===
+    QString net_name_ = "NewNet";
+    QString net_comment_;
+    QStringList net_inputs_;
+    QStringList net_outputs_;
+
+    struct VarDef {
+        QString type, name, init;
+    };
+    QList<VarDef> net_variables_;
 };
 
 #endif // MAIN_WINDOW_H

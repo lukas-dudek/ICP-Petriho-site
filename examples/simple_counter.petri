@@ -1,0 +1,24 @@
+Jméno sítě:
+    simple_counter
+Komentář:
+    Jednoduchý čítač – při vstupu přesune token a inkrementuje proměnnou
+Vstupy:
+    trigger
+Výstupy:
+    count_out
+Proměnné:
+    int counter = 0
+Místa:
+    P_ready (1)
+    P_done (0)
+Přechody:
+T_count :
+    in:  P_ready*1
+    out: P_done*1
+    when: trigger
+    do: { var_counter = var_counter + 1; }
+T_reset :
+    in:  P_done*1
+    out: P_ready*1
+    when:
+    do: { output("count_out", "done"); }

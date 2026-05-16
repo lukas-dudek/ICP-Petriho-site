@@ -32,7 +32,9 @@ MOC_HEADERS = $(SRCDIR)/gui/main_window.h \
               $(SRCDIR)/gui/canvas/petrinet_view.h \
               $(SRCDIR)/gui/widgets/injection_panel.h \
               $(SRCDIR)/gui/widgets/log_panel.h \
-              $(SRCDIR)/gui/widgets/state_overview_panel.h
+              $(SRCDIR)/gui/widgets/state_overview_panel.h \
+              $(SRCDIR)/gui/widgets/transition_dialog.h \
+              $(SRCDIR)/gui/widgets/place_dialog.h
 
 MOC_SOURCES = $(patsubst $(SRCDIR)/%.h, $(BUILDDIR)/moc_%.cpp, $(MOC_HEADERS))
 MOC_OBJECTS = $(patsubst %.cpp, %.o, $(MOC_SOURCES))
