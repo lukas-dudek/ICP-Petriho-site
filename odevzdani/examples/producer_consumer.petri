@@ -1,0 +1,29 @@
+Jméno sítě:
+    ProducerConsumer
+Komentář:
+    Producent-konzument s omezeným bufferem (kapacita 3).
+    Demonstruje nezávislé odpálení, stráže a sdílené místo (buffer).
+Vstupy:
+    produce
+    consume
+Výstupy:
+    status
+    buffer_count
+Proměnné:
+    int produced = 0
+    int consumed = 0
+Místa:
+    PROD_READY (1) : { output("status", "producer ready"); }
+    BUFFER (0) : { output("buffer_count", tokens("BUFFER")); }
+    CONS_READY (1) : { output("status", "consumer ready"); }
+Přechody:
+T_produce :
+    in:  PROD_READY*1
+    out: PROD_READY*1, BUFFER*1
+    when: produce [ tokens("BUFFER") < 3 ]
+    do: { produced = produced + 1; output("status", "produced item"); }
+T_consume :
+    in:  CONS_READY*1, BUFFER*1
+    out: CONS_READY*1
+    when: consume [ tokens("BUFFER") > 0 ]
+    do: { consumed = consumed + 1; output("status", "consumed item"); }

@@ -1,0 +1,32 @@
+Jméno sítě:
+    TrafficLight
+Komentář:
+    Semafor cyklicky přepíná mezi červenou, zelenou a oranžovou.
+    Demonstruje zpožděné přechody bez vstupních událostí (čistě časovaná síť).
+Vstupy:
+Výstupy:
+    color
+Proměnné:
+    int green_time = 5000
+    int orange_time = 2000
+    int red_time = 5000
+Místa:
+    RED (1) : { output("color", "red"); }
+    GREEN (0) : { output("color", "green"); }
+    ORANGE (0) : { output("color", "orange"); }
+Přechody:
+T_red_to_green :
+    in:  RED*1
+    out: GREEN*1
+    when: @ red_time
+    do: { }
+T_green_to_orange :
+    in:  GREEN*1
+    out: ORANGE*1
+    when: @ green_time
+    do: { }
+T_orange_to_red :
+    in:  ORANGE*1
+    out: RED*1
+    when: @ orange_time
+    do: { }

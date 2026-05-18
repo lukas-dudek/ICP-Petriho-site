@@ -1,0 +1,25 @@
+Jméno sítě:
+    output_test
+Komentář:
+    Testovací síť pro ověření output(), valueof(), defined(), tokens(), elapsed(), now()
+Vstupy:
+    cmd
+Výstupy:
+    result
+    status
+Proměnné:
+    int counter = 0
+Místa:
+    P_idle (1)
+    P_active (0)
+Přechody:
+T_activate :
+    in:  P_idle*1
+    out: P_active*1
+    when: cmd
+    do: { var_counter = var_counter + 1; output("result", var_counter); output("status", "activated"); }
+T_deactivate :
+    in:  P_active*1
+    out: P_idle*1
+    when: cmd [ atoi(valueof("cmd")) == 0 ]
+    do: { output("status", "deactivated"); output("result", tokens("P_idle")); }
