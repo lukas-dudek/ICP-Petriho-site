@@ -20,6 +20,7 @@ class PlaceItem : public QGraphicsEllipseItem
 {
 public:
     explicit PlaceItem(const QString& id, int initialTokens = 0);
+    ~PlaceItem() override;
 
     QString placeId() const { return id_; }
     void    setPlaceId(const QString& id);

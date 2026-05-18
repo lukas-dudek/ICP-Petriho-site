@@ -62,11 +62,13 @@ ArcItem* PetriNetScene::addArc(QGraphicsItem* from, QGraphicsItem* to, int weigh
 void PetriNetScene::removeSelected()
 {
     auto selected = selectedItems();
+    if (selected.isEmpty()) return;
+
     for (auto* item : selected) {
-        removeItem(item);
+        if (!item->scene()) continue; // Položka už byla smazána kaskádově
         delete item;
     }
-    if (!selected.isEmpty()) emit networkModified();
+    emit networkModified();
 }
 
 void PetriNetScene::clear()

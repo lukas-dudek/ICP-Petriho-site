@@ -83,10 +83,20 @@ void ArcItem::updatePath()
         path.cubicTo(QPointF(t.x(), ctrl.y()), QPointF(p.x(), ctrl.y()), p);
     }
 
+    // Šipka na konci (vytvoření polygonu pomocí úhlu křivky)
+    QPointF endPt = path.pointAtPercent(1.0);
+    qreal angle = path.angleAtPercent(1.0);
+    
+    QPolygonF arrowHead;
+    arrowHead << QPointF(0, 0) << QPointF(-12, -6) << QPointF(-12, 6) << QPointF(0, 0);
+    
+    QTransform transform;
+    transform.translate(endPt.x(), endPt.y());
+    transform.rotate(-angle); // QTransform::rotate je po směru hodinových ručiček
+    
+    path.addPolygon(transform.map(arrowHead));
+    
     setPath(path);
-
-    // Šipka na konci
-    // (zjednodušeně se vykreslí v paint, nebo se může přidat polygon)
 
     // Váha doprostřed
     if (weight_label_) {

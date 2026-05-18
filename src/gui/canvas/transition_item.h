@@ -28,6 +28,7 @@ class TransitionItem : public QGraphicsRectItem
 {
 public:
     explicit TransitionItem(const QString& id);
+    ~TransitionItem() override;
 
     QString transitionId() const { return id_; }
     void    setTransitionId(const QString& id);

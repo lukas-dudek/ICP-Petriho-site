@@ -44,6 +44,13 @@ PlaceItem::PlaceItem(const QString& id, int initialTokens)
     token_label_->setFont(f);
 }
 
+PlaceItem::~PlaceItem()
+{
+    while (!arcs_.isEmpty()) {
+        delete arcs_.takeFirst();
+    }
+}
+
 void PlaceItem::setPlaceId(const QString& id)
 {
     id_ = id;

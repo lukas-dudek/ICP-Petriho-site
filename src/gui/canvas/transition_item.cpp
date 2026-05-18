@@ -30,6 +30,13 @@ TransitionItem::TransitionItem(const QString& id)
     label_->setPos(QPointF(-25, -40));
 }
 
+TransitionItem::~TransitionItem()
+{
+    while (!arcs_.isEmpty()) {
+        delete arcs_.takeFirst();
+    }
+}
+
 void TransitionItem::setTransitionId(const QString& id)
 {
     id_ = id;
