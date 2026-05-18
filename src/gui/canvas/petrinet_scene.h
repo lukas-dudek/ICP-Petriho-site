@@ -1,7 +1,7 @@
 /**
  * @file petrinet_scene.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace Qt scény pro vizuální editaci Petriho sítě.
  */
 #ifndef PETRINET_SCENE_H
 #define PETRINET_SCENE_H

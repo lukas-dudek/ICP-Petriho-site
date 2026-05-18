@@ -1,7 +1,7 @@
 /**
  * @file state_overview_panel.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace panelu přehledu stavu sítě za běhu.
  */
 #ifndef STATE_OVERVIEW_PANEL_H
 #define STATE_OVERVIEW_PANEL_H

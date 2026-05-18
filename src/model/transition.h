@@ -1,7 +1,7 @@
 /**
  * @file transition.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Definice třídy Transition reprezentující přechod v Petriho síti.
  */
 #ifndef PETS_TRANSITION_H
 #define PETS_TRANSITION_H
@@ -10,6 +10,7 @@
 #include <vector>
 #include <optional>
 #include <cstdint>
+#include <chrono>
 #include "arc.h"
 
 namespace pets {
@@ -50,12 +51,21 @@ public:
      */
     std::optional<int64_t> delay_ms;
 
+    /**
+     * @brief Surový výraz pro delay (např. "5000" nebo "timeout").
+     *        Umožňuje dynamické vyhodnocení delay za běhu.
+     */
+    std::optional<std::string> delay_expr;
+
     
     /**
      * @brief Kód akce přechodu v C/C++.
      *        Provede se při odpálení (po odebrání tokenů, před přidáním).
      */
     std::optional<std::string> action_code;
+
+    /// Čas poslední změny stavu proveditelnosti (pro elapsed("transition"))
+    std::chrono::steady_clock::time_point last_enabled_change{};
 
     
     Transition() = default;
@@ -66,7 +76,7 @@ public:
     bool is_event_driven() const { return input_event_name.has_value(); }
 
     /// Je přechod zpožděný?
-    bool is_delayed() const { return delay_ms.has_value(); }
+    bool is_delayed() const { return delay_ms.has_value() || delay_expr.has_value(); }
 
     /// Má přechod strážní podmínku?
     bool has_guard() const { return guard_expression.has_value(); }

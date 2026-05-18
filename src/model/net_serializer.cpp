@@ -1,7 +1,7 @@
 /**
  * @file net_serializer.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace serializace a parsování textového formátu .petri.
  */
 #include "net_serializer.h"
 #include "petrinet.h"
@@ -108,7 +108,9 @@ std::string NetSerializer::serialize(const PetriNet& net)
         if (t.guard_expression.has_value()) {
             ss << " [ " << t.guard_expression.value() << " ]";
         }
-        if (t.delay_ms.has_value()) {
+        if (t.delay_expr.has_value()) {
+            ss << " @ " << t.delay_expr.value();
+        } else if (t.delay_ms.has_value()) {
             ss << " @ " << t.delay_ms.value();
         }
         ss << "\n";
@@ -320,9 +322,14 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
                 auto at_pos = cond.find('@');
                 if (at_pos != std::string::npos) {
                     std::string delay_str = trim(cond.substr(at_pos + 1));
-                    try {
-                        current_temp->t.delay_ms = std::stoll(delay_str);
-                    } catch (...) {}
+                    if (!delay_str.empty()) {
+                        current_temp->t.delay_expr = delay_str;
+                        try {
+                            current_temp->t.delay_ms = std::stoll(delay_str);
+                        } catch (...) {
+                            // Dynamický výraz (proměnná) – delay_ms zůstane nullopt
+                        }
+                    }
                     cond = trim(cond.substr(0, at_pos));
                 }
 

@@ -1,7 +1,7 @@
 /**
  * @file place_dialog.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace dialogu pro editaci tokenů a akce místa.
  */
 /**
  * @file    place_dialog.cpp

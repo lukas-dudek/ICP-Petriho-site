@@ -1,7 +1,7 @@
 /**
  * @file event_queue.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace thread-safe fronty událostí pro interpret.
  */
 #ifndef PETS_EVENT_QUEUE_H
 #define PETS_EVENT_QUEUE_H

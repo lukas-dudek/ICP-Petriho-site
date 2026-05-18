@@ -1,7 +1,7 @@
 /**
  * @file petrinet_scene.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace scény - přidávání prvků, kreslení hran myší.
  */
 /** @brief Implementace scény Petriho sítě. @author Jan */
 #include "petrinet_scene.h"

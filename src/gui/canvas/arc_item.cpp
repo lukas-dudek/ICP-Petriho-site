@@ -1,7 +1,7 @@
 /**
  * @file arc_item.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace vykreslování a správy hran v Qt scéně.
  */
 /** @brief Implementace grafické reprezentace hrany. @author Jan */
 #include "arc_item.h"

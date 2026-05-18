@@ -1,7 +1,7 @@
 /**
  * @file interpreter.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace hlavní třídy Interpreter pro běh Petriho sítě.
  */
 #ifndef PETS_INTERPRETER_H
 #define PETS_INTERPRETER_H

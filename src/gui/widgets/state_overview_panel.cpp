@@ -1,13 +1,7 @@
 /**
  * @file state_overview_panel.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
- */
-/**
- * @file    state_overview_panel.cpp
- * @brief   Implementace panelu přehledu stavu sítě.
- * @author  Jan
- * @date    2026-05-04
+ * @brief Implementace panelu přehledu stavu sítě (proměnné, vstupy, výstupy, timeouty).
  */
 
 #include "state_overview_panel.h"
@@ -41,6 +35,13 @@ StateOverviewPanel::StateOverviewPanel(QWidget* parent)
     inputs_table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tabs->addTab(inputs_table_, "Vstupy");
 
+    // --- Výstupy ---
+    outputs_table_ = new QTableWidget(0, 2, this);
+    outputs_table_->setHorizontalHeaderLabels({"Výstup", "Hodnota"});
+    outputs_table_->horizontalHeader()->setStretchLastSection(true);
+    outputs_table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tabs->addTab(outputs_table_, "Výstupy");
+
     // --- Timeouty ---
     timers_table_ = new QTableWidget(0, 2, this);
     timers_table_->setHorizontalHeaderLabels({"Přechod", "Zbývá [ms]"});
@@ -69,6 +70,15 @@ void StateOverviewPanel::updateState(const RuntimeState& state)
             QString::fromStdString(state.input_values[i].name)));
         inputs_table_->setItem(i, 1, new QTableWidgetItem(
             QString::fromStdString(state.input_values[i].value)));
+    }
+
+    // Výstupy
+    outputs_table_->setRowCount(static_cast<int>(state.output_values.size()));
+    for (int i = 0; i < static_cast<int>(state.output_values.size()); ++i) {
+        outputs_table_->setItem(i, 0, new QTableWidgetItem(
+            QString::fromStdString(state.output_values[i].name)));
+        outputs_table_->setItem(i, 1, new QTableWidgetItem(
+            QString::fromStdString(state.output_values[i].value)));
     }
 
     // Timeouty

@@ -1,7 +1,7 @@
 /**
  * @file petrinet.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace metod třídy PetriNet (validace, vyhledávání, reset).
  */
 #include "petrinet.h"
 #include <algorithm>

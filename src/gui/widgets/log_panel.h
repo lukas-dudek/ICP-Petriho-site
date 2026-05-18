@@ -1,7 +1,7 @@
 /**
  * @file log_panel.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace panelu pro zobrazení logu událostí.
  */
 #ifndef LOG_PANEL_H
 #define LOG_PANEL_H

@@ -9,6 +9,8 @@
 *.exe
 *.out
 *.app
+test_backend
+src/build/
 
 # Build directory (as defined in Makefile)
 build/

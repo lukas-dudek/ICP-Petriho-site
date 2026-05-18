@@ -1,7 +1,7 @@
 /**
  * @file timer_manager.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace správce časovačů pro zpožděné přechody.
  */
 
 // timer_manager.h
@@ -37,6 +37,9 @@ public:
 
     /// Zruší všechny časovače.
     void clear();
+
+    /// Zjistí, zda pro daný přechod už běží časovač.
+    bool has_timer(Transition* t) const;
 
     /// Vrátí počet aktivních časovačů.
     size_t size() const;

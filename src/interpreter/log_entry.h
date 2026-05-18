@@ -1,7 +1,7 @@
 /**
  * @file log_entry.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Definice struktury LogEntry pro záznamy v logu událostí.
  */
 /**
  * @file    log_entry.h

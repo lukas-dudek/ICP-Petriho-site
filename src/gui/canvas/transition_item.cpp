@@ -1,7 +1,7 @@
 /**
  * @file transition_item.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace vykreslování přechodů se zvýrazněním v Qt scéně.
  */
 /**
  * @brief Implementace grafické reprezentace přechodu.
@@ -63,7 +63,10 @@ void TransitionItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
     dlg.setId(id_);
     dlg.setInputEvent(input_event_);
     dlg.setGuardExpression(guard_expression_);
-    dlg.setDelayMs(delay_ms_);
+    if (delay_ms_ > 0)
+        dlg.setDelayMs(delay_ms_);
+    if (!delay_expr_.isEmpty())
+        dlg.setDelayExpr(delay_expr_);
     dlg.setActionCode(action_code_);
     dlg.setPriority(priority_);
 
@@ -72,6 +75,7 @@ void TransitionItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
         input_event_ = dlg.inputEvent();
         guard_expression_ = dlg.guardExpression();
         delay_ms_ = dlg.hasDelay() ? dlg.delayMs() : 0;
+        delay_expr_ = dlg.delayExpr();
         action_code_ = dlg.actionCode();
         priority_ = dlg.priority();
     }

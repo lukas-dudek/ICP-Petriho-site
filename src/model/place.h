@@ -1,7 +1,7 @@
 /**
  * @file place.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Definice třídy Place reprezentující místo v Petriho síti.
  */
 #ifndef PETS_PLACE_H
 #define PETS_PLACE_H

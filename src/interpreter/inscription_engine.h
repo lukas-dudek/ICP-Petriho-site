@@ -1,7 +1,7 @@
 /**
  * @file inscription_engine.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace JIT kompilačního engine pro inskripční jazyk.
  */
 #ifndef PETS_INSCRIPTION_ENGINE_H
 #define PETS_INSCRIPTION_ENGINE_H
@@ -58,8 +58,14 @@ public:
 // Proměnné se namapují jako globální symboly v načtené knihovně.
     void setup_context(const PetriNet& net);
 
+    /// Přečte aktuální hodnoty proměnných z JIT knihovny zpět do modelu.
+    void sync_back_variables(PetriNet& net);
+
     // @brief Nastaví callback pro output().
     void set_output_callback(OutputFunc callback);
+
+    /// Zavolá registrovaný output callback (voláno z C trampoline).
+    void invoke_output_callback(const std::string& name, const std::string& value);
 
     
     // @brief Vyhodnotí strážní podmínku přechodu.
@@ -74,6 +80,9 @@ public:
     // @brief Provede akci místa (při přidání tokenu).
 // @param p Místo, jehož akce se má provést.
     void execute_place_action(const Place& p);
+
+    /// Vyhodnotí dynamické zpoždění přechodu (konstantní nebo z JIT funkce).
+    int64_t evaluate_delay(const Transition& t);
 
 private:
     

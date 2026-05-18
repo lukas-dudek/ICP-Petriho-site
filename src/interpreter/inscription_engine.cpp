@@ -1,7 +1,7 @@
 /**
  * @file inscription_engine.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace JIT kompilačního engine pro inskripční jazyk Petriho sítí.
  */
 #include "inscription_engine.h"
 #include "../model/petrinet.h"
@@ -12,6 +12,7 @@
 #include <cstring>
 #include <chrono>
 #include <list>
+#include <iostream>
 
 #ifdef _WIN32
   #include <windows.h>
@@ -29,10 +30,25 @@
 
 namespace pets {
 
+/// Globální ukazatel na aktuální InscriptionEngine instanci (pro C trampoline)
+static InscriptionEngine* g_active_engine = nullptr;
+
+/// C trampoline funkce pro output() volání z JIT kódu
+static void output_trampoline(const char* name, const char* value)
+{
+    if (g_active_engine) {
+        g_active_engine->invoke_output_callback(
+            name ? name : "", value ? value : "");
+    }
+}
+
 // Destruktor
 
 InscriptionEngine::~InscriptionEngine()
 {
+    if (g_active_engine == this) {
+        g_active_engine = nullptr;
+    }
     unload();
 }
 
@@ -97,6 +113,16 @@ void InscriptionEngine::setup_context(const PetriNet& net)
 {
     if (!lib_handle_) return;
 
+    // Nastav globální engine pro output trampoline
+    g_active_engine = this;
+
+    // Nastav output_func pointer v knihovně na trampoline
+    void* output_func_ptr = get_symbol("output_func");
+    if (output_func_ptr) {
+        using OutputFuncType = void(*)(const char*, const char*);
+        *reinterpret_cast<OutputFuncType*>(output_func_ptr) = &output_trampoline;
+    }
+
     auto now = std::chrono::steady_clock::now();
     static auto start_time = now;
     int64_t now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -119,6 +145,18 @@ void InscriptionEngine::setup_context(const PetriNet& net)
         set_extern_int("elapsed_" + place.id, elapsed);
     }
 
+    // Nastav elapsed_* pro přechody (doba nepřetržité proveditelnosti)
+    for (const auto& t : net.transitions) {
+        if (t.is_delayed() && t.last_enabled_change != std::chrono::steady_clock::time_point{}) {
+            int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+                now - t.last_enabled_change
+            ).count();
+            set_extern_int("elapsed_" + t.id, elapsed);
+        } else {
+            set_extern_int("elapsed_" + t.id, 0);
+        }
+    }
+
     // Nastav var_* pro každou proměnnou
     for (const auto& var : net.variables) {
         if (var.type == "int") {
@@ -133,9 +171,36 @@ void InscriptionEngine::setup_context(const PetriNet& net)
     set_extern_int64("now_ms", now_ms);
 }
 
+void InscriptionEngine::sync_back_variables(PetriNet& net)
+{
+    if (!lib_handle_) return;
+
+    for (auto& var : net.variables) {
+        if (var.type == "int") {
+            void* ptr = get_symbol("var_" + var.name);
+            if (ptr) {
+                var.current_value = std::to_string(*static_cast<int*>(ptr));
+            }
+        } else {
+            void* ptr = get_symbol("var_" + var.name);
+            if (ptr) {
+                const char* val = *static_cast<const char**>(ptr);
+                if (val) var.current_value = val;
+            }
+        }
+    }
+}
+
 void InscriptionEngine::set_output_callback(OutputFunc callback)
 {
     output_callback_ = std::move(callback);
+}
+
+void InscriptionEngine::invoke_output_callback(const std::string& name, const std::string& value)
+{
+    if (output_callback_) {
+        output_callback_(name, value);
+    }
 }
 
 // Vyhodnocení stráže / akce
@@ -205,6 +270,27 @@ void InscriptionEngine::execute_place_action(const Place& p)
     fn();
 }
 
+int64_t InscriptionEngine::evaluate_delay(const Transition& t)
+{
+    // Pokud je delay konstantní číslo, vrať ho přímo
+    if (t.delay_ms.has_value()) {
+        return t.delay_ms.value();
+    }
+
+    // Dynamický výraz – zavolej JIT funkci delay_<id>()
+    if (t.delay_expr.has_value() && lib_handle_) {
+        std::string func_name = "delay_" + t.id;
+        void* func_ptr = get_symbol(func_name);
+        if (func_ptr) {
+            using DelayFunc = int64_t (*)();
+            auto fn = reinterpret_cast<DelayFunc>(func_ptr);
+            return fn();
+        }
+    }
+
+    return 0;  // Fallback
+}
+
 // Generování C++ zdrojáku
 
 std::string InscriptionEngine::generate_source(const PetriNet& net) const
@@ -269,9 +355,15 @@ std::string InscriptionEngine::generate_context_externs(const PetriNet& net) con
         ss << "    int elapsed_" << place.id << " = 0;\n";
     }
 
+    // Elapsed pro přechody
+    for (const auto& t : net.transitions) {
+        ss << "    int elapsed_" << t.id << " = 0;\n";
+    }
+
     for (const auto& var : net.variables) {
         if (var.type == "int") {
-            ss << "    int var_" << var.name << " = " << var.initial_value << ";\n";
+            std::string init_val = var.initial_value.empty() ? "0" : var.initial_value;
+            ss << "    int var_" << var.name << " = " << init_val << ";\n";
         } else {
             ss << "    const char* var_" << var.name << " = \"" << var.initial_value << "\";\n";
         }
@@ -293,11 +385,10 @@ std::string InscriptionEngine::generate_builtin_wrappers(const PetriNet& net) co
     std::ostringstream ss;
     ss << "// ==================== Builtin Wrappers ====================\n\n";
 
-    // valueof() - není třeba, přistupuje se přímo k extern proměnným
+    ss << "#include <cstdlib>\n";
+    ss << "#include <cstring>\n\n";
 
-    // defined() - není třeba
-
-    // output() wrapper
+    // ====== output() – dvě přetížení: (const char*, const char*) a (const char*, int) ======
     ss << "static void output(const char* name, const char* value)\n";
     ss << "{\n";
     ss << "    if (output_func) {\n";
@@ -305,19 +396,82 @@ std::string InscriptionEngine::generate_builtin_wrappers(const PetriNet& net) co
     ss << "    }\n";
     ss << "}\n\n";
 
-    // tokens() wrapper - vrací tokens_<id>
-    for (const auto& place : net.places) {
-        ss << "static int tokens_" << place.id << "_wrapper() { return tokens_"
-           << place.id << "; }\n";
-    }
+    ss << "static void output(const char* name, int value)\n";
+    ss << "{\n";
+    ss << "    char buf[32];\n";
+    ss << "    snprintf(buf, sizeof(buf), \"%d\", value);\n";
+    ss << "    output(name, buf);\n";
+    ss << "}\n\n";
 
-    // elapsed() wrapper - vrací elapsed_<id>
-    for (const auto& place : net.places) {
-        ss << "static int elapsed_" << place.id << "_wrapper() { return elapsed_"
-           << place.id << "; }\n";
+    // ====== valueof("in_name") – mapovací funkce ======
+    ss << "static const char* valueof(const char* name)\n";
+    ss << "{\n";
+    for (const auto& input : net.inputs) {
+        ss << "    if (strcmp(name, \"" << input.name << "\") == 0) return valueof_" << input.name << ";\n";
     }
+    ss << "    return \"\";\n";
+    ss << "}\n\n";
 
+    // ====== defined("in_name") ======
+    ss << "static bool defined(const char* name)\n";
+    ss << "{\n";
+    for (const auto& input : net.inputs) {
+        ss << "    if (strcmp(name, \"" << input.name << "\") == 0) return defined_" << input.name << ";\n";
+    }
+    ss << "    return false;\n";
+    ss << "}\n\n";
+
+    // ====== tokens("place") ======
+    ss << "static int tokens(const char* name)\n";
+    ss << "{\n";
+    for (const auto& place : net.places) {
+        ss << "    if (strcmp(name, \"" << place.id << "\") == 0) return tokens_" << place.id << ";\n";
+    }
+    ss << "    return 0;\n";
+    ss << "}\n\n";
+
+    // ====== elapsed("place_or_transition") ======
+    ss << "static int elapsed(const char* name)\n";
+    ss << "{\n";
+    for (const auto& place : net.places) {
+        ss << "    if (strcmp(name, \"" << place.id << "\") == 0) return elapsed_" << place.id << ";\n";
+    }
+    for (const auto& t : net.transitions) {
+        ss << "    if (strcmp(name, \"" << t.id << "\") == 0) return elapsed_" << t.id << ";\n";
+    }
+    ss << "    return 0;\n";
+    ss << "}\n\n";
+
+    // ====== now() ======
+    ss << "static int64_t now()\n";
+    ss << "{\n";
+    ss << "    return now_ms;\n";
+    ss << "}\n\n";
+
+    // ====== Aliasy proměnných: timeout → var_timeout ======
+    ss << "// ==================== Variable Aliases ====================\n";
+    ss << "// Umožňuje psát 'timeout' místo 'var_timeout' v inskripčním kódu.\n\n";
+    for (const auto& var : net.variables) {
+        if (var.type == "int") {
+            ss << "static int& " << var.name << " = var_" << var.name << ";\n";
+        } else {
+            ss << "static const char*& " << var.name << " = var_" << var.name << ";\n";
+        }
+    }
     ss << "\n";
+
+    // ====== Delay resolver funkce pro dynamické zpoždění ======
+    ss << "// ==================== Delay Resolvers ====================\n\n";
+    for (const auto& t : net.transitions) {
+        if (t.delay_expr.has_value() && !t.delay_ms.has_value()) {
+            // Dynamický výraz – generuj funkci
+            ss << "extern \"C\" int64_t delay_" << t.id << "()\n";
+            ss << "{\n";
+            ss << "    return static_cast<int64_t>(" << t.delay_expr.value() << ");\n";
+            ss << "}\n\n";
+        }
+    }
+
     return ss.str();
 }
 

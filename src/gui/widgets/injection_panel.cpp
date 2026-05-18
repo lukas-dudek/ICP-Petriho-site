@@ -1,7 +1,7 @@
 /**
  * @file injection_panel.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace panelu pro asynchronní injekci vstupů.
  */
 /** @brief Implementace panelu pro injektování vstupů. @author Jan */
 #include "injection_panel.h"

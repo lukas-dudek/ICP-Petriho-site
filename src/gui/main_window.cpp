@@ -1,7 +1,7 @@
 /**
  * @file main_window.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace hlavního okna - menu, toolbar, panely, interpret.
  */
 #include "main_window.h"
 #include "canvas/petrinet_scene.h"
@@ -494,8 +494,10 @@ void MainWindow::parseTransitionsToModel(pets::PetriNet* net) const {
                 t.input_event_name = ti->inputEvent().toStdString();
             if (!ti->guardExpression().isEmpty())
                 t.guard_expression = ti->guardExpression().toStdString();
-            if (ti->hasDelay())
+            if (ti->delayMs() > 0)
                 t.delay_ms = ti->delayMs();
+            if (!ti->delayExpr().isEmpty())
+                t.delay_expr = ti->delayExpr().toStdString();
             if (!ti->actionCode().isEmpty())
                 t.action_code = ti->actionCode().toStdString();
 
@@ -572,6 +574,8 @@ void MainWindow::parseTransitionsToScene(const PetriNet& net, const QMap<QString
             ti->setGuardExpression(QString::fromStdString(t.guard_expression.value()));
         if (t.delay_ms.has_value())
             ti->setDelayMs(t.delay_ms.value());
+        if (t.delay_expr.has_value())
+            ti->setDelayExpr(QString::fromStdString(t.delay_expr.value()));
         if (t.action_code.has_value())
             ti->setActionCode(QString::fromStdString(t.action_code.value()));
         ti->setPriority(t.priority);

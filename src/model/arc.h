@@ -1,7 +1,7 @@
 /**
  * @file arc.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Definice struktury Arc reprezentující hranu v Petriho síti.
  */
 #ifndef PETS_ARC_H
 #define PETS_ARC_H

@@ -1,7 +1,7 @@
 /**
  * @file main_backend.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Vstupní bod backend-only režimu pro testování bez GUI.
  */
 #include <chrono>
 #include <iostream>

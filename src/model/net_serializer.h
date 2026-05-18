@@ -1,7 +1,7 @@
 /**
  * @file net_serializer.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace třídy NetSerializer pro serializaci a deserializaci sítí.
  */
 #ifndef PETS_NET_SERIALIZER_H
 #define PETS_NET_SERIALIZER_H

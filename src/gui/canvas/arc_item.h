@@ -1,7 +1,7 @@
 /**
  * @file arc_item.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Grafická reprezentace hrany (oblouku) v Qt scéně.
  */
 #ifndef ARC_ITEM_H
 #define ARC_ITEM_H

@@ -1,8 +1,146 @@
-15:27:16	DUMP: net_.inputs.size=1	
-15:27:16	Interpreter started for net: TOF_PN_5s	
-15:27:20	DEBUG: checking name='in' against net_.inputs[0]='in'	
-15:27:20	Input 'in' set to 'start'	
-15:27:20	Place 'P_idle': removed 1 token(s), now has 0	
-15:27:20	Place 'P_active': added 1 token(s), now has 1	
-15:27:20	Transition 'T_on' fired	
-15:27:20	Scheduled timeout for transition 'T_off' in 5000 ms	
+21:51:30	Interpret spuštěn pro síť: TOF_PN	
+21:53:11	Vstup 'in' nastaven na '1'	
+21:53:11	Místo 'IDLE': odebráno 1 tokenů, nyní má 0	
+21:53:11	Místo 'ACTIVE': přidáno 1 tokenů, nyní má 1	
+21:53:11	Output 'out' = '1'	
+21:53:11	Output 'rt' = '5000'	
+21:53:11	Přechod 'T_on' odpálen	
+21:53:55	Vstup 'in' nastaven na '0'	
+21:53:55	Místo 'ACTIVE': odebráno 1 tokenů, nyní má 0	
+21:53:55	Místo 'TIMING': přidáno 1 tokenů, nyní má 1	
+21:53:55	Output 'rt' = '5000'	
+21:53:55	Přechod 'T_off_start' odpálen	
+21:53:55	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:00	Timeout vypršel pro přechod 'T_timeout_off'	
+21:54:00	Místo 'TIMING': odebráno 1 tokenů, nyní má 0	
+21:54:00	Místo 'IDLE': přidáno 1 tokenů, nyní má 1	
+21:54:00	Output 'out' = '0'	
+21:54:00	Output 'rt' = '0'	
+21:54:00	Přechod 'T_timeout_off' odpálen	
+21:54:10	Vstup 'in' nastaven na '1'	
+21:54:10	Místo 'IDLE': odebráno 1 tokenů, nyní má 0	
+21:54:10	Místo 'ACTIVE': přidáno 1 tokenů, nyní má 1	
+21:54:10	Output 'out' = '1'	
+21:54:10	Output 'rt' = '5000'	
+21:54:10	Přechod 'T_on' odpálen	
+21:54:13	Vstup 'in' nastaven na '0'	
+21:54:13	Místo 'ACTIVE': odebráno 1 tokenů, nyní má 0	
+21:54:13	Místo 'TIMING': přidáno 1 tokenů, nyní má 1	
+21:54:13	Output 'rt' = '5000'	
+21:54:13	Přechod 'T_off_start' odpálen	
+21:54:13	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:18	Timeout vypršel pro přechod 'T_timeout_off'	
+21:54:18	Místo 'TIMING': odebráno 1 tokenů, nyní má 0	
+21:54:18	Místo 'IDLE': přidáno 1 tokenů, nyní má 1	
+21:54:18	Output 'out' = '0'	
+21:54:18	Output 'rt' = '0'	
+21:54:18	Přechod 'T_timeout_off' odpálen	
+21:54:30	Vstup 'in' nastaven na '1'	
+21:54:30	Místo 'IDLE': odebráno 1 tokenů, nyní má 0	
+21:54:30	Místo 'ACTIVE': přidáno 1 tokenů, nyní má 1	
+21:54:30	Output 'out' = '1'	
+21:54:30	Output 'rt' = '5000'	
+21:54:30	Přechod 'T_on' odpálen	
+21:54:37	Vstup 'in' nastaven na '0'	
+21:54:37	Místo 'ACTIVE': odebráno 1 tokenů, nyní má 0	
+21:54:37	Místo 'TIMING': přidáno 1 tokenů, nyní má 1	
+21:54:37	Output 'rt' = '5000'	
+21:54:37	Přechod 'T_off_start' odpálen	
+21:54:37	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:41	Vstup 'req_rt' nastaven na '1'	
+21:54:41	Místo 'TIMING': odebráno 1 tokenů, nyní má 0	
+21:54:41	Output 'rt' = '5000'	
+21:54:41	Místo 'TIMING': přidáno 1 tokenů, nyní má 1	
+21:54:41	Output 'rt' = '5000'	
+21:54:41	Přechod 'T_req_timing' odpálen	
+21:54:41	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:42	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:42	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:42	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:42	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:42	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:54:42	Timeout vypršel pro přechod 'T_timeout_off'	
+21:54:42	Místo 'TIMING': odebráno 1 tokenů, nyní má 0	
+21:54:42	Místo 'IDLE': přidáno 1 tokenů, nyní má 1	
+21:54:42	Output 'out' = '0'	
+21:54:42	Output 'rt' = '0'	
+21:54:42	Přechod 'T_timeout_off' odpálen	
+21:55:11	Vstup 'in' nastaven na '1'	
+21:55:11	Místo 'IDLE': odebráno 1 tokenů, nyní má 0	
+21:55:11	Místo 'ACTIVE': přidáno 1 tokenů, nyní má 1	
+21:55:11	Output 'out' = '1'	
+21:55:11	Output 'rt' = '5000'	
+21:55:11	Přechod 'T_on' odpálen	
+21:55:22	Vstup 'in' nastaven na '0'	
+21:55:22	Místo 'ACTIVE': odebráno 1 tokenů, nyní má 0	
+21:55:22	Místo 'TIMING': přidáno 1 tokenů, nyní má 1	
+21:55:22	Output 'rt' = '5000'	
+21:55:22	Přechod 'T_off_start' odpálen	
+21:55:22	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:27	Timeout vypršel pro přechod 'T_timeout_off'	
+21:55:27	Místo 'TIMING': odebráno 1 tokenů, nyní má 0	
+21:55:27	Místo 'IDLE': přidáno 1 tokenů, nyní má 1	
+21:55:27	Output 'out' = '0'	
+21:55:27	Output 'rt' = '0'	
+21:55:27	Přechod 'T_timeout_off' odpálen	
+21:55:30	Vstup 'set_to' nastaven na '2000'	
+21:55:30	Místo 'IDLE': odebráno 1 tokenů, nyní má 0	
+21:55:30	Output 'rt' = '0'	
+21:55:30	Místo 'IDLE': přidáno 1 tokenů, nyní má 1	
+21:55:30	Output 'out' = '0'	
+21:55:30	Output 'rt' = '0'	
+21:55:30	Přechod 'T_set_idle' odpálen	
+21:55:37	Vstup 'in' nastaven na '1'	
+21:55:37	Místo 'IDLE': odebráno 1 tokenů, nyní má 0	
+21:55:37	Místo 'ACTIVE': přidáno 1 tokenů, nyní má 1	
+21:55:37	Output 'out' = '1'	
+21:55:37	Output 'rt' = '5000'	
+21:55:37	Přechod 'T_on' odpálen	
+21:55:38	Vstup 'in' nastaven na '0'	
+21:55:38	Místo 'ACTIVE': odebráno 1 tokenů, nyní má 0	
+21:55:38	Místo 'TIMING': přidáno 1 tokenů, nyní má 1	
+21:55:38	Output 'rt' = '5000'	
+21:55:38	Přechod 'T_off_start' odpálen	
+21:55:38	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Naplánován timeout pro přechod 'T_timeout_off' za 5000 ms	
+21:55:43	Timeout vypršel pro přechod 'T_timeout_off'	
+21:55:43	Místo 'TIMING': odebráno 1 tokenů, nyní má 0	
+21:55:43	Místo 'IDLE': přidáno 1 tokenů, nyní má 1	
+21:55:43	Output 'out' = '0'	
+21:55:43	Output 'rt' = '0'	
+21:55:43	Přechod 'T_timeout_off' odpálen	

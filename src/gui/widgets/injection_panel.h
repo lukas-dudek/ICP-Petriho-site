@@ -1,7 +1,7 @@
 /**
  * @file injection_panel.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace panelu pro injektování vstupních hodnot za běhu.
  */
 #ifndef INJECTION_PANEL_H
 #define INJECTION_PANEL_H

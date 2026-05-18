@@ -1,7 +1,7 @@
 /**
  * @file transition_dialog.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Deklarace dialogu pro editaci vlastností přechodu.
  */
 /**
  * @file    transition_dialog.h
@@ -33,6 +33,7 @@ public:
     void setInputEvent(const QString& event);
     void setGuardExpression(const QString& guard);
     void setDelayMs(int64_t delay);
+    void setDelayExpr(const QString& expr);
     void setActionCode(const QString& code);
     void setPriority(int priority);
 
@@ -40,6 +41,7 @@ public:
     QString inputEvent() const;
     QString guardExpression() const;
     int64_t delayMs() const;
+    QString delayExpr() const;
     QString actionCode() const;
     int     priority() const;
     bool    hasDelay() const;
@@ -48,7 +50,7 @@ private:
     QLineEdit* id_edit_      = nullptr;
     QLineEdit* event_edit_   = nullptr;
     QLineEdit* guard_edit_   = nullptr;
-    QSpinBox*  delay_spin_   = nullptr;
+    QLineEdit* delay_edit_   = nullptr;
     QTextEdit* action_edit_  = nullptr;
     QSpinBox*  priority_spin_ = nullptr;
     QCheckBox* delay_check_  = nullptr;

@@ -1,7 +1,7 @@
 /**
  * @file runtime_state.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Struktury pro kompletní runtime stav sítě přenášený do GUI.
  */
 /**
  * @file    runtime_state.h

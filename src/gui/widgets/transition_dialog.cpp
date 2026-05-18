@@ -1,13 +1,7 @@
 /**
  * @file transition_dialog.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
- */
-/**
- * @file    transition_dialog.cpp
- * @brief   Implementace dialogu pro editaci přechodu.
- * @author  Jan
- * @date    2026-05-04
+ * @brief Implementace dialogu pro editaci podmínek a akcí přechodu.
  */
 
 #include "transition_dialog.h"
@@ -44,13 +38,12 @@ TransitionDialog::TransitionDialog(QWidget* parent)
     delay_check_ = new QCheckBox(tr("Zpožděný přechod"), this);
     form->addRow(delay_check_);
 
-    delay_spin_ = new QSpinBox(this);
-    delay_spin_->setRange(0, 999999);
-    delay_spin_->setSuffix(" ms");
-    delay_spin_->setEnabled(false);
-    form->addRow(tr("Zpoždění @:"), delay_spin_);
+    delay_edit_ = new QLineEdit(this);
+    delay_edit_->setPlaceholderText(tr("číslo (ms) nebo proměnná (např. timeout)"));
+    delay_edit_->setEnabled(false);
+    form->addRow(tr("Zpoždění @:"), delay_edit_);
 
-    connect(delay_check_, &QCheckBox::toggled, delay_spin_, &QSpinBox::setEnabled);
+    connect(delay_check_, &QCheckBox::toggled, delay_edit_, &QLineEdit::setEnabled);
 
     priority_spin_ = new QSpinBox(this);
     priority_spin_->setRange(0, 100);
@@ -84,10 +77,18 @@ void TransitionDialog::setDelayMs(int64_t delay)
 {
     if (delay > 0) {
         delay_check_->setChecked(true);
-        delay_spin_->setValue(static_cast<int>(delay));
+        delay_edit_->setText(QString::number(delay));
     } else {
         delay_check_->setChecked(false);
-        delay_spin_->setValue(0);
+        delay_edit_->clear();
+    }
+}
+
+void TransitionDialog::setDelayExpr(const QString& expr)
+{
+    if (!expr.isEmpty()) {
+        delay_check_->setChecked(true);
+        delay_edit_->setText(expr);
     }
 }
 
@@ -97,7 +98,20 @@ void TransitionDialog::setPriority(int priority) { priority_spin_->setValue(prio
 QString TransitionDialog::id() const { return id_edit_->text().trimmed(); }
 QString TransitionDialog::inputEvent() const { return event_edit_->text().trimmed(); }
 QString TransitionDialog::guardExpression() const { return guard_edit_->text().trimmed(); }
-int64_t TransitionDialog::delayMs() const { return delay_spin_->value(); }
+
+int64_t TransitionDialog::delayMs() const
+{
+    bool ok;
+    int64_t val = delay_edit_->text().trimmed().toLongLong(&ok);
+    return ok ? val : 0;
+}
+
+QString TransitionDialog::delayExpr() const
+{
+    if (!delay_check_->isChecked()) return {};
+    return delay_edit_->text().trimmed();
+}
+
 QString TransitionDialog::actionCode() const { return action_edit_->toPlainText().trimmed(); }
 int     TransitionDialog::priority() const { return priority_spin_->value(); }
 bool    TransitionDialog::hasDelay() const { return delay_check_->isChecked(); }

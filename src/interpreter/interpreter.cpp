@@ -1,7 +1,7 @@
 /**
  * @file interpreter.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace hlavní smyčky interpretu Petriho sítí.
  */
 #include "interpreter.h"
 #include "inscription_engine.h"
@@ -19,20 +19,31 @@ Interpreter::Interpreter(const PetriNet& net)
 {
     net_.reset();
 
+    std::string work_dir = "/tmp/pets_" + net_.name;
+    std::string cmd = "mkdir -p " + work_dir;
+    if (system(cmd.c_str()) != 0) {
+        std::cerr << "Warning: Failed to create directory " << work_dir << std::endl;
+    }
+
     std::string error;
-    if (!inscription_engine_->compile(net_, "/tmp/pets_" + net_.name, error)) {
+    if (!inscription_engine_->compile(net_, work_dir, error)) {
         std::cerr << "Warning: JIT compilation failed: " << error << std::endl;
     }
 
     // Nastav output callback
     inscription_engine_->set_output_callback(
         [this](const std::string& name, const std::string& value) {
-            // Najdi výstup a zaloguj
+            // Ulož poslední hodnotu výstupu
             auto* out = net_.find_output(name);
             if (out) {
+                out->last_value = value;
                 log(LogType::OUTPUT_SENT,
                     "Output '" + name + "' = '" + value + "'");
+            } else {
+                log(LogType::INFO,
+                    "Output generated: '" + name + "' = '" + value + "' (Note: '" + name + "' is not declared in network outputs!)");
             }
+            notify_state();
         }
     );
 }
@@ -307,6 +318,7 @@ void Interpreter::fire_transition(Transition* t)
     if (t->action_code.has_value() && inscription_engine_->is_loaded()) {
         inscription_engine_->setup_context(net_);
         inscription_engine_->execute_transition_action(*t);
+        inscription_engine_->sync_back_variables(net_);
     }
 
     // pridej tokeny
@@ -322,6 +334,7 @@ void Interpreter::fire_transition(Transition* t)
             if (p->place_action.has_value() && inscription_engine_->is_loaded()) {
                 inscription_engine_->setup_context(net_);
                 inscription_engine_->execute_place_action(*p);
+                inscription_engine_->sync_back_variables(net_);
             }
         }
     }
@@ -349,10 +362,14 @@ void Interpreter::schedule_delayed()
                 if (p) token_sum += p->current_tokens;
             }
 
-            timer_manager_.schedule(&t, t.delay_ms.value(), token_sum);
+            // Zkontroluj, jestli už timer běží (timer_manager deduplikuje, ale neloguj spam)
+            if (timer_manager_.has_timer(&t)) continue;
+
+            int64_t delay = inscription_engine_->evaluate_delay(t);
+            timer_manager_.schedule(&t, delay, token_sum);
             log(LogType::TIMEOUT_SCHEDULED,
                 "Naplánován timeout pro přechod '" + t.id
-                + "' za " + std::to_string(t.delay_ms.value()) + " ms");
+                + "' za " + std::to_string(delay) + " ms");
         }
     }
 }
@@ -436,10 +453,11 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
             auto* p = net_.find_place(arc.place_id);
             if (p) token_sum += p->current_tokens;
         }
-        timer_manager_.schedule(t, t->delay_ms.value(), token_sum);
+        int64_t delay = inscription_engine_->evaluate_delay(*t);
+        timer_manager_.schedule(t, delay, token_sum);
         log(LogType::TIMEOUT_SCHEDULED,
             "Naplánován (event) timeout pro přechod '" + t->id
-            + "' za " + std::to_string(t->delay_ms.value()) + " ms");
+            + "' za " + std::to_string(delay) + " ms");
     }
 }
 
@@ -497,6 +515,11 @@ RuntimeState Interpreter::get_current_state() const
     // Proměnné
     for (const auto& v : net_.variables) {
         state.variable_values.push_back({v.name, v.current_value});
+    }
+
+    // Výstupy
+    for (const auto& o : net_.outputs) {
+        state.output_values.push_back({o.name, o.last_value});
     }
 
     return state;

@@ -1,7 +1,7 @@
 /**
  * @file timer_manager.cpp
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Implementace správce časovačů pro zpožděné přechody.
  */
 #include "timer_manager.h"
 #include "../model/transition.h"
@@ -63,6 +63,15 @@ void TimerManager::clear()
 {
     std::lock_guard<std::mutex> lock(mutex_);
     timers_.clear();
+}
+
+bool TimerManager::has_timer(Transition* t) const
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    for (const auto& entry : timers_) {
+        if (entry.transition == t) return true;
+    }
+    return false;
 }
 
 size_t TimerManager::size() const

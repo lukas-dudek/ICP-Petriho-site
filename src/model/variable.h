@@ -1,7 +1,7 @@
 /**
  * @file variable.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Definice třídy Variable reprezentující interní proměnnou sítě.
  */
 #ifndef PETS_VARIABLE_H
 #define PETS_VARIABLE_H

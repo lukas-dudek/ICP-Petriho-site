@@ -1,7 +1,7 @@
 /**
  * @file transition_item.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Grafická reprezentace přechodu (transition) v Qt scéně.
  */
 #ifndef TRANSITION_ITEM_H
 #define TRANSITION_ITEM_H
@@ -44,7 +44,11 @@ public:
 
     void    setDelayMs(int64_t d)               { delay_ms_ = d; }
     int64_t delayMs() const                     { return delay_ms_; }
-    bool    hasDelay() const                    { return delay_ms_ > 0; }
+
+    void    setDelayExpr(const QString& e)       { delay_expr_ = e; }
+    QString delayExpr() const                   { return delay_expr_; }
+
+    bool    hasDelay() const                    { return delay_ms_ > 0 || !delay_expr_.isEmpty(); }
 
     void    setActionCode(const QString& c)     { action_code_ = c; }
     QString actionCode() const                  { return action_code_; }
@@ -71,6 +75,7 @@ private:
     QString input_event_;
     QString guard_expression_;
     int64_t delay_ms_ = 0;
+    QString delay_expr_;
     QString action_code_;
     int     priority_ = 0;
 

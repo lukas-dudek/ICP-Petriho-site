@@ -1,7 +1,7 @@
 /**
  * @file petrinet.h
  * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
- * @brief 
+ * @brief Definice třídy PetriNet reprezentující celou Petriho síť.
  */
 #ifndef PETS_PETRINET_H
 #define PETS_PETRINET_H
