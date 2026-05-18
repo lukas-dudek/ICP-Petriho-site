@@ -31,11 +31,11 @@ PlaceItem::PlaceItem(const QString& id, int initialTokens)
     setBrush(Qt::white);
     setPen(QPen(Qt::black, 2));
 
-    // Popisek – jméno
+    // Popisek - jméno
     label_ = new QGraphicsTextItem(id, this);
     label_->setPos(QPointF(-25, -50));
 
-    // Popisek – počet tokenů
+    // Popisek - počet tokenů
     token_label_ = new QGraphicsTextItem(QString::number(token_count_), this);
     token_label_->setPos(QPointF(-8, -8));
     QFont f = token_label_->font();

@@ -138,7 +138,7 @@ void PetriNetScene::updateHighlights(const RuntimeState& state)
 }
 
 // ============================================================
-// Mouse – kreslení hran
+// Mouse - kreslení hran
 // ============================================================
 
 void PetriNetScene::mousePressEvent(QGraphicsSceneMouseEvent* event)

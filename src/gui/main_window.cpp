@@ -197,7 +197,7 @@ void MainWindow::setupConnections()
             this, &MainWindow::onInjectInput);
 }
 
-// Sloty – Editor
+// Sloty - Editor
 
 void MainWindow::onNewNetwork()
 {
@@ -370,7 +370,7 @@ void MainWindow::onEditNetworkProperties()
     statusBar()->showMessage(tr("Vlastnosti sítě aktualizovány"), 2000);
 }
 
-// Sloty – Run
+// Sloty - Run
 
 void MainWindow::onGenerateAndRun()
 {
@@ -389,7 +389,7 @@ void MainWindow::onGenerateAndRun()
 
     interpreter_ = std::make_unique<Interpreter>(*net);
 
-    // Callbacky – musíme posílat přes Qt event loop (z jiného vlákna)
+    // Callbacky - musíme posílat přes Qt event loop (z jiného vlákna)
     interpreter_->set_state_callback(
         [this](const RuntimeState& state) {
             QMetaObject::invokeMethod(this, [this, state]() {
@@ -429,11 +429,11 @@ void MainWindow::onStopInterpreter()
     statusBar()->showMessage(tr("Interpret zastaven"), 3000);
 }
 
-// Sloty – Data z interpretu
+// Sloty - Data z interpretu
 
 void MainWindow::onRuntimeStateReceived(const RuntimeState& state)
 {
-    // Aktualizuj scénu – tokeny, zvýraznění
+    // Aktualizuj scénu - tokeny, zvýraznění
     scene_->updateTokens(state);
     scene_->updateHighlights(state);
 
@@ -446,7 +446,7 @@ void MainWindow::onLogEntryReceived(const LogEntry& entry)
     log_panel_->appendLog(entry);
 }
 
-// Sloty – Injekce
+// Sloty - Injekce
 
 void MainWindow::onInjectInput(const QString& inputName, const QString& value)
 {
@@ -455,11 +455,11 @@ void MainWindow::onInjectInput(const QString& inputName, const QString& value)
         statusBar()->showMessage(
             tr("Vstup '%1' = '%2' injektován").arg(inputName, value), 2000);
     } else {
-        statusBar()->showMessage(tr("Interpret neběží – nelze injektovat"), 2000);
+        statusBar()->showMessage(tr("Interpret neběží - nelze injektovat"), 2000);
     }
 }
 
-// Sloty – View
+// Sloty - View
 
 void MainWindow::onZoomIn()  { view_->zoomIn(); }
 void MainWindow::onZoomOut() { view_->zoomOut(); }

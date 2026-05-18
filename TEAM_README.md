@@ -46,7 +46,7 @@ Plátno slouží k vizuálnímu návrhu Petriho sítě.
 
 ### ⚡ Injektování vstupů a Logy (Vpravo)
 *   **Injection Panel:** Protože je síť tzv. "reaktivní" (Event-driven), za běhu většinou tiše spí a čeká. Pokud jste v levém panelu nadefinovali nějaký "Vstup" (např. `in`), z roletky v tomto panelu si ho vyberete, do políčka napíšete hodnotu a kliknete na **Injektovat**. Tím simulujete to, že uživatel (nebo jiný systém) venku něco udělal. Síť se probudí, vyhodnotí, jestli na daný vstup nějaký přechod nereaguje, a případně se odpálí.
-*   **Log Panel:** Úplně dole vpravo se loguje každý krok sítě – od přesunů tokenů až po odpočty časovačů.
+*   **Log Panel:** Úplně dole vpravo se loguje každý krok sítě - od přesunů tokenů až po odpočty časovačů.
 
 ### 🔍 Přehled stavu sítě (Vpravo dole)
 Během simulace (po kliknutí na Run) v tomto panelu vidíte všechny živé informace: 

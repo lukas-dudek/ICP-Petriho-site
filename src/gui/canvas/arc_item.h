@@ -41,7 +41,7 @@ private:
     TransitionItem* transition_ = nullptr;
     int             weight_     = 1;
     QGraphicsTextItem* weight_label_ = nullptr;
-    bool            is_input_   = true;  // Place→Transition (input), Transition→Place (output)
+    bool            is_input_   = true;  // Place-Transition (input), Transition-Place (output)
 };
 
 #endif

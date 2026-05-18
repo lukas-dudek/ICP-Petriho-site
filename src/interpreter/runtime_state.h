@@ -42,7 +42,7 @@ struct NamedValue {
  * živé zobrazení markingu, povolených přechodů, timeoutů atd.
  */
 struct RuntimeState {
-    // Marking – aktuální počty tokenů ve všech místech
+    // Marking - aktuální počty tokenů ve všech místech
     std::vector<NamedValue> places_tokens;
 
     // Seznam právě povolených (enabled) přechodů

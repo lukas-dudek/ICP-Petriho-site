@@ -157,7 +157,7 @@ bool InscriptionEngine::evaluate_guard(const Transition& t)
         return false;
     }
 
-    // Zavolej – signatura: bool (*)();
+    // Zavolej - signatura: bool (*)();
     using GuardFunc = bool (*)();
     auto fn = reinterpret_cast<GuardFunc>(func_ptr);
     return fn();
@@ -280,7 +280,7 @@ std::string InscriptionEngine::generate_context_externs(const PetriNet& net) con
     ss << "    int64_t now_ms = 0;\n";
     ss << "\n";
 
-    // Output callback – funkce pointer nastavený zvenčí
+    // Output callback - funkce pointer nastavený zvenčí
     ss << "    void (*output_func)(const char* name, const char* value) = nullptr;\n";
 
     ss << "} // extern \"C\"\n\n";
@@ -293,9 +293,9 @@ std::string InscriptionEngine::generate_builtin_wrappers(const PetriNet& net) co
     std::ostringstream ss;
     ss << "// ==================== Builtin Wrappers ====================\n\n";
 
-    // valueof() – není třeba, přistupuje se přímo k extern proměnným
+    // valueof() - není třeba, přistupuje se přímo k extern proměnným
 
-    // defined() – není třeba
+    // defined() - není třeba
 
     // output() wrapper
     ss << "static void output(const char* name, const char* value)\n";
@@ -305,13 +305,13 @@ std::string InscriptionEngine::generate_builtin_wrappers(const PetriNet& net) co
     ss << "    }\n";
     ss << "}\n\n";
 
-    // tokens() wrapper – vrací tokens_<id>
+    // tokens() wrapper - vrací tokens_<id>
     for (const auto& place : net.places) {
         ss << "static int tokens_" << place.id << "_wrapper() { return tokens_"
            << place.id << "; }\n";
     }
 
-    // elapsed() wrapper – vrací elapsed_<id>
+    // elapsed() wrapper - vrací elapsed_<id>
     for (const auto& place : net.places) {
         ss << "static int elapsed_" << place.id << "_wrapper() { return elapsed_"
            << place.id << "; }\n";
@@ -339,7 +339,7 @@ std::string InscriptionEngine::generate_action_function(const std::string& func_
     ss << "extern \"C\" void " << func_name << "()\n";
     ss << "{\n";
 
-    // Stejně jako u stráže – kód musí být platné C++ používající
+    // Stejně jako u stráže - kód musí být platné C++ používající
     // extern proměnné valueof_X, defined_X, tokens_X, elapsed_X, now_ms.
     ss << code << "\n";
 

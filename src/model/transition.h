@@ -28,8 +28,8 @@ public:
     int priority = 0; ///< Priorita pro deterministické řešení konfliktů (nižší = dřívější)
 
     
-    std::vector<Arc> input_arcs;  ///< Vstupní hrany (místo → přechod) s vahami
-    std::vector<Arc> output_arcs; ///< Výstupní hrany (přechod → místo) s vahami
+    std::vector<Arc> input_arcs;  ///< Vstupní hrany (místo - přechod) s vahami
+    std::vector<Arc> output_arcs; ///< Výstupní hrany (přechod - místo) s vahami
 
     
     /**

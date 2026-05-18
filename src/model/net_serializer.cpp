@@ -35,7 +35,7 @@ static std::string extract_braces(const std::string& s)
     return trim(s.substr(first + 1, last - first - 1));
 }
 
-// Serialize (model → text)
+// Serialize (model - text)
 
 std::string NetSerializer::serialize(const PetriNet& net)
 {
@@ -141,7 +141,7 @@ bool NetSerializer::save(const PetriNet& net, const std::string& path,
     return true;
 }
 
-// Parse (text → model)
+// Parse (text - model)
 
 bool NetSerializer::parse(const std::string& content, PetriNet& net,
                           std::string& error)
@@ -212,19 +212,19 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
             section = Section::VARIABLES;
             continue;
         }
-        // Místa – match variants
+        // Místa - match variants
         if (trimmed.find("Místa") == 0 || trimmed.find("Mista") == 0) {
             finalize_all();
             section = Section::PLACES;
             continue;
         }
-        // Přechody – match variants
+        // Přechody - match variants
         if (trimmed.find("Přechody") == 0 || trimmed.find("Prechody") == 0) {
             finalize_all();
             section = Section::TRANSITIONS;
             continue;
         }
-        // Pozn.: – komentáře, ignorovat
+        // Pozn.: - komentáře, ignorovat
         if (trimmed.find("Pozn.:") == 0 || trimmed.find("Pozn:") == 0) {
             continue;
         }

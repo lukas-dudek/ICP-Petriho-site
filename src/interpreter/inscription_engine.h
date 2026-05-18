@@ -22,7 +22,7 @@ class Output;
 
 // @brief Engine pro dynamické vyhodnocování C++ výrazů.
 // 
-// Používá JIT kompilaci – generuje, kompiluje a dynamicky načítá
+// Používá JIT kompilaci - generuje, kompiluje a dynamicky načítá
 // sdílenou knihovnu s funkcemi pro stráže a akce.
 class InscriptionEngine {
 public:

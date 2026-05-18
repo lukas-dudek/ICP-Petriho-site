@@ -82,10 +82,10 @@ Základní verze: podmnožina C/C++ interpretovaná/kompilovaná v rámci genero
 
 Musí být k dispozici minimálně tyto vestavěné funkce:
 valueof("in_name") -> const char* (poslední známá hodnota vstupu)
-defined("in_name") -> bool (zda byl vstup někdy nastaven, případně zda byl nastaven od posledního zpracování – zvolte a specifikujte)
+defined("in_name") -> bool (zda byl vstup někdy nastaven, případně zda byl nastaven od posledního zpracování - zvolte a specifikujte)
 output("out_name", x) -> void (vygeneruje výstupní událost; x se konvertuje na string)
 tokens("place") -> int (aktuální počet tokenů v místě)
-elapsed("place") -> int (doba od poslední změny tokenů v místě, nebo od poslední aktivace – zvolte a specifikujte; doporučeno: od poslední změny počtu tokenů)
+elapsed("place") -> int (doba od poslední změny tokenů v místě, nebo od poslední aktivace - zvolte a specifikujte; doporučeno: od poslední změny počtu tokenů)
 elapsed("transition") -> int (doba nepřetržité proveditelnosti časovaného neboli zpožděného přechodu)
 now() -> int64 (čas v ms od startu)
 Další pomocné funkce dle potřeby.

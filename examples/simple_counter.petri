@@ -1,7 +1,7 @@
 Jméno sítě:
     simple_counter
 Komentář:
-    Jednoduchý čítač – při vstupu přesune token a inkrementuje proměnnou
+    Jednoduchý čítač - při vstupu přesune token a inkrementuje proměnnou
 Vstupy:
     trigger
 Výstupy:

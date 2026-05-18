@@ -58,7 +58,7 @@ TransitionDialog::TransitionDialog(QWidget* parent)
 
     mainLayout->addLayout(form);
 
-    // Akce – větší text edit
+    // Akce - větší text edit
     mainLayout->addWidget(new QLabel(tr("Akce (C/C++ kód):"), this));
     action_edit_ = new QTextEdit(this);
     action_edit_->setMinimumHeight(100);

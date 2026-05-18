@@ -12,7 +12,7 @@ SRCDIR    = .
 BUILDDIR  = build
 TARGET    = pets_app
 
-# Backend sources (NO main_backend.cpp – that has its own main())
+# Backend sources (NO main_backend.cpp - that has its own main())
 SOURCES_BACKEND = $(wildcard $(SRCDIR)/model/*.cpp) \
                   $(wildcard $(SRCDIR)/interpreter/*.cpp) \
                   $(wildcard $(SRCDIR)/codegen/*.cpp) \

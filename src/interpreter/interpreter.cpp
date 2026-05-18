@@ -121,18 +121,18 @@ void Interpreter::main_loop()
             bool got_event = event_queue_.wait_for(next_timeout, event);
 
             if (!got_event) {
-                // Timeout vypršel – zkontroluj timer manager
+                // Timeout vypršel - zkontroluj timer manager
                 auto expired = timer_manager_.get_expired();
                 for (auto* t : expired) {
                     event_queue_.push(Event::make_timeout(t));
                 }
                 // Znovu načti z fronty (teď už by tam mělo něco být)
                 if (!event_queue_.try_pop(event)) {
-                    continue;  // Spurious wakeup – jdi zpět na začátek
+                    continue;  // Spurious wakeup - jdi zpět na začátek
                 }
             }
         } else {
-            // Žádné časovače – čekej na externí událost (nebo STOP)
+            // Žádné časovače - čekej na externí událost (nebo STOP)
             event = event_queue_.wait();
         }
 
@@ -370,7 +370,7 @@ void Interpreter::handle_timeout(Transition* t)
     } else {
         log(LogType::TIMEOUT_IGNORED,
             "Timeout pro přechod '" + t->id
-            + "' ignorován – přechod již není povolen");
+            + "' ignorován - přechod již není povolen");
     }
 }
 
@@ -381,7 +381,7 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
     auto* input = net_.find_input(name);
     if (!input) {
         log(LogType::INFO,
-            "Ignorována vstupní událost '" + name + "' – neznámý vstup");
+            "Ignorována vstupní událost '" + name + "' - neznámý vstup");
         return;
     }
 
@@ -416,7 +416,7 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
         }
     }
 
-    // Okamžité – zařaď do stabilizační smyčky
+    // Okamžité - zařaď do stabilizační smyčky
     if (!immediate.empty()) {
         auto to_fire = find_executable_transitions(immediate);
         std::sort(to_fire.begin(), to_fire.end(),
@@ -429,7 +429,7 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
         }
     }
 
-    // Zpožděné – naplánuj
+    // Zpožděné - naplánuj
     for (auto* t : delayed) {
         int token_sum = 0;
         for (const auto& arc : t->input_arcs) {
@@ -468,7 +468,7 @@ RuntimeState Interpreter::get_current_state() const
 {
     RuntimeState state;
 
-    // Místa – tokeny
+    // Místa - tokeny
     for (const auto& p : net_.places) {
         state.places_tokens.push_back({p.id, std::to_string(p.current_tokens)});
     }
