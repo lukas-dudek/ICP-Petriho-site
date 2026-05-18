@@ -465,7 +465,7 @@ void MainWindow::onZoomIn()  { view_->zoomIn(); }
 void MainWindow::onZoomOut() { view_->zoomOut(); }
 void MainWindow::onFitToWindow() { view_->fitInView(); }
 
-// Konverze scéna ↔ model
+// Konverze scéna - model
 
 void MainWindow::parsePlacesToModel(pets::PetriNet* net) const {
     for (auto* item : scene_->items()) {
