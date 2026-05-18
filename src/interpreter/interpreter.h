@@ -1,5 +1,8 @@
-// interpreter.h - behova smycka interpretu
-
+/**
+ * @file interpreter.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETS_INTERPRETER_H
 #define PETS_INTERPRETER_H
 
@@ -43,7 +46,7 @@ public:
     RuntimeState get_current_state() const;
 
     // Verejne pro testovani
-    std::vector<Transition*> get_independent_set(
+    std::vector<Transition*> find_executable_transitions(
         const std::vector<Transition*>& candidates);
 
 private:
@@ -66,7 +69,7 @@ private:
 
     EventQueue    event_queue_;
     TimerManager  timer_manager_;
-    std::unique_ptr<InscriptionEngine> inscription_engine_;  // <-- NOVÉ
+    std::unique_ptr<InscriptionEngine> inscription_engine_;
 
     StateCallback state_callback_;
     LogCallback   log_callback_;

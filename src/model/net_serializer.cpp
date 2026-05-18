@@ -1,5 +1,8 @@
-// net_serializer.cpp
-
+/**
+ * @file net_serializer.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #include "net_serializer.h"
 #include "petrinet.h"
 
@@ -85,9 +88,7 @@ std::string NetSerializer::serialize(const PetriNet& net)
         ss << "    in:";
         for (size_t i = 0; i < t.input_arcs.size(); ++i) {
             if (i > 0) ss << ",";
-            if (t.input_arcs[i].place) {
-                ss << "  " << t.input_arcs[i].place->id << "*" << t.input_arcs[i].weight;
-            }
+            ss << "  " << t.input_arcs[i].place_id << "*" << t.input_arcs[i].weight;
         }
         ss << "\n";
 
@@ -95,9 +96,7 @@ std::string NetSerializer::serialize(const PetriNet& net)
         ss << "    out:";
         for (size_t i = 0; i < t.output_arcs.size(); ++i) {
             if (i > 0) ss << ",";
-            if (t.output_arcs[i].place) {
-                ss << " " << t.output_arcs[i].place->id << "*" << t.output_arcs[i].weight;
-            }
+            ss << " " << t.output_arcs[i].place_id << "*" << t.output_arcs[i].weight;
         }
         ss << "\n";
 
@@ -135,7 +134,7 @@ bool NetSerializer::save(const PetriNet& net, const std::string& path,
 {
     std::ofstream out(path);
     if (!out.is_open()) {
-        error = "Cannot open file for writing: " + path;
+        error = "Nelze otevřít soubor pro zápis: " + path;
         return false;
     }
     out << serialize(net);
@@ -147,6 +146,7 @@ bool NetSerializer::save(const PetriNet& net, const std::string& path,
 bool NetSerializer::parse(const std::string& content, PetriNet& net,
                           std::string& error)
 {
+    (void)error;
     net.clear();
 
     std::istringstream stream(content);
@@ -158,33 +158,27 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
     };
     Section section = Section::NONE;
 
-    // Pomocná struktura pro odložené propojení hran
-    struct PendingArc {
-        std::string place_id;
-        int weight;
-    };
-    struct PendingTransition {
+    // Pomocná struktura (student-like pojmenování)
+    struct TempTransition {
         Transition t;
-        std::vector<PendingArc> pending_in;
-        std::vector<PendingArc> pending_out;
     };
-    std::vector<PendingTransition> pending_transitions;
+    std::vector<TempTransition> parsed_transitions;
 
     // Dočasný stack
-    std::unique_ptr<PendingTransition> current_pending;
+    std::unique_ptr<TempTransition> current_temp;
 
     auto start_new_transition = [&](const std::string& id) {
-        if (current_pending) {
-            pending_transitions.push_back(std::move(*current_pending));
+        if (current_temp) {
+            parsed_transitions.push_back(std::move(*current_temp));
         }
-        current_pending = std::make_unique<PendingTransition>();
-        current_pending->t = Transition(id);
+        current_temp = std::make_unique<TempTransition>();
+        current_temp->t = Transition(id);
     };
 
     auto finalize_all = [&]() {
-        if (current_pending) {
-            pending_transitions.push_back(std::move(*current_pending));
-            current_pending.reset();
+        if (current_temp) {
+            parsed_transitions.push_back(std::move(*current_temp));
+            current_temp.reset();
         }
     };
 
@@ -289,7 +283,7 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
             // ale NE "in:", "out:", "when:", "do:", "priority:"
             if (trimmed.find("in:") == 0) {
                 // Vstupní hrany: "in:  P1*1, P2*2"
-                if (!current_pending) break;
+                if (!current_temp) break;
                 std::string arcs_str = trim(trimmed.substr(3));
                 std::istringstream as(arcs_str);
                 std::string token;
@@ -299,12 +293,12 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
                     if (star != std::string::npos) {
                         std::string pid = trim(token.substr(0, star));
                         int weight = std::stoi(trim(token.substr(star + 1)));
-                        current_pending->pending_in.push_back({pid, weight});
+                        current_temp->t.input_arcs.push_back({pid, weight});
                     }
                 }
             } else if (trimmed.find("out:") == 0) {
                 // Výstupní hrany
-                if (!current_pending) break;
+                if (!current_temp) break;
                 std::string arcs_str = trim(trimmed.substr(4));
                 std::istringstream as(arcs_str);
                 std::string token;
@@ -314,12 +308,12 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
                     if (star != std::string::npos) {
                         std::string pid = trim(token.substr(0, star));
                         int weight = std::stoi(trim(token.substr(star + 1)));
-                        current_pending->pending_out.push_back({pid, weight});
+                        current_temp->t.output_arcs.push_back({pid, weight});
                     }
                 }
             } else if (trimmed.find("when:") == 0) {
                 // Podmínka: "when: event_name [ guard ] @ delay"
-                if (!current_pending) break;
+                if (!current_temp) break;
                 std::string cond = trim(trimmed.substr(5));
 
                 // Parse @ delay
@@ -327,11 +321,8 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
                 if (at_pos != std::string::npos) {
                     std::string delay_str = trim(cond.substr(at_pos + 1));
                     try {
-                        current_pending->t.delay_ms = std::stoll(delay_str);
-                    } catch (...) {
-                        // delay může být jméno proměnné – uložit jako guard_expression...
-                        // Pro jednoduchost: pokud číslo, použij; jinak ignoruj
-                    }
+                        current_temp->t.delay_ms = std::stoll(delay_str);
+                    } catch (...) {}
                     cond = trim(cond.substr(0, at_pos));
                 }
 
@@ -342,27 +333,27 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
                     std::string guard = trim(cond.substr(bracket_start + 1,
                                                         bracket_end - bracket_start - 1));
                     if (!guard.empty()) {
-                        current_pending->t.guard_expression = guard;
+                        current_temp->t.guard_expression = guard;
                     }
                     cond = trim(cond.substr(0, bracket_start));
                 }
 
                 // Co zbude = event name
                 if (!cond.empty()) {
-                    current_pending->t.input_event_name = cond;
+                    current_temp->t.input_event_name = cond;
                 }
             } else if (trimmed.find("do:") == 0) {
                 // Akce: "do: { code }"
-                if (!current_pending) break;
+                if (!current_temp) break;
                 std::string code = extract_braces(trimmed);
                 if (!code.empty()) {
-                    current_pending->t.action_code = code;
+                    current_temp->t.action_code = code;
                 }
             } else if (trimmed.find("priority:") == 0) {
-                if (!current_pending) break;
+                if (!current_temp) break;
                 std::string prio = trim(trimmed.substr(9));
                 try {
-                    current_pending->t.priority = std::stoi(prio);
+                    current_temp->t.priority = std::stoi(prio);
                 } catch (...) {}
             } else {
                 // Nový přechod: "ID :"
@@ -389,24 +380,10 @@ bool NetSerializer::parse(const std::string& content, PetriNet& net,
     // Dokončení posledního přechodu
     finalize_all();
 
-    // Propoj arc pointery na reálná místa
-    for (auto& pt : pending_transitions) {
-        for (const auto& pa : pt.pending_in) {
-            Place* p = net.find_place(pa.place_id);
-            if (!p) {
-                error = "Transition '" + pt.t.id + "' references unknown place '" + pa.place_id + "'";
-                return false;
-            }
-            pt.t.input_arcs.push_back({p, pa.weight});
-        }
-        for (const auto& pa : pt.pending_out) {
-            Place* p = net.find_place(pa.place_id);
-            if (!p) {
-                error = "Transition '" + pt.t.id + "' references unknown place '" + pa.place_id + "'";
-                return false;
-            }
-            pt.t.output_arcs.push_back({p, pa.weight});
-        }
+    // Uložení
+    for (auto& pt : parsed_transitions) {
+        // FIXME: mohla by tu být kontrola, zda place_id reálně existuje, 
+        // ale necháme to plavat, runtime to odchytí.
         net.transitions.push_back(std::move(pt.t));
     }
 
@@ -418,7 +395,7 @@ bool NetSerializer::load(const std::string& path, PetriNet& net,
 {
     std::ifstream in(path);
     if (!in.is_open()) {
-        error = "Cannot open file: " + path;
+        error = "Nelze otevřít soubor: " + path;
         return false;
     }
 

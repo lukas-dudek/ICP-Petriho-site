@@ -1,4 +1,9 @@
 /**
+ * @file state_overview_panel.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    state_overview_panel.cpp
  * @brief   Implementace panelu přehledu stavu sítě.
  * @author  Jan

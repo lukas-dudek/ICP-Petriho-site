@@ -2,9 +2,9 @@ Nástroj pro vizuální editaci a monitorování Petriho sítí
 =========================================================
 
 Autoři:
-- Lukáš (xname01)
-- Jan (xname02)
-- Matěj (xname03)
+- Lukáš Dudek (xdudekl00)
+- Jan Raška (xraskaj00)
+- Matěj Zaoral (xzaoram00)
 
 Popis:
 Tento projekt implementuje editor, interpret a monitor interpretovaných Petriho sítí 

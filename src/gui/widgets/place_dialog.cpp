@@ -1,4 +1,9 @@
 /**
+ * @file place_dialog.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    place_dialog.cpp
  * @brief   Implementace dialogu pro editaci místa.
  * @author  Jan

@@ -1,4 +1,9 @@
 /**
+ * @file place_item.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    place_item.cpp
  * @brief   Implementace grafické reprezentace místa.
  * @author  Jan

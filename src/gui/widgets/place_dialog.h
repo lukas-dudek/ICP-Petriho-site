@@ -1,4 +1,9 @@
 /**
+ * @file place_dialog.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    place_dialog.h
  * @brief   Dialog pro editaci vlastností místa.
  * @author  Jan

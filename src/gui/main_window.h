@@ -1,10 +1,8 @@
 /**
- * @file    main_window.h
- * @brief   Hlavní okno aplikace – propojuje editor, monitor a všechny panely.
- * @author  Jan
- * @date    2026-05-04
+ * @file main_window.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
  */
-
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
@@ -28,12 +26,9 @@ class LogPanel;
 class InjectionPanel;
 class StateOverviewPanel;
 
-/**
- * @brief Hlavní okno aplikace.
- *
- * Spravuje přepínání mezi editačním a monitorovacím režimem,
- * menu, toolbar a dokovací panely. Drží vlastnictví interpreteru.
- */
+// Hlavní okno aplikace.
+// Spravuje přepínání mezi editačním a monitorovacím režimem,
+// menu, toolbar a dokovací panely. Drží vlastnictví interpreteru.
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -60,9 +55,6 @@ private slots:
     void onGenerateAndRun();
     void onStopInterpreter();
 
-    // === Monitor / Připojení ===
-    void onConnectToRunning();
-    void onDisconnect();
 
     // === Pricházející data z interpretu ===
     void onRuntimeStateReceived(const RuntimeState& state);
@@ -86,11 +78,13 @@ private:
     void updateWindowTitle();
     void updateActionsForMode();
 
-    /// Sestaví PetriNet model z aktuální scény
     std::unique_ptr<pets::PetriNet> sceneToModel() const;
+    void parsePlacesToModel(pets::PetriNet* net) const;
+    void parseTransitionsToModel(pets::PetriNet* net) const;
 
-    /// Načte PetriNet model do scény
     void modelToScene(const pets::PetriNet& net);
+    void parsePlacesToScene(const pets::PetriNet& net, QMap<QString, class PlaceItem*>& placeMap);
+    void parseTransitionsToScene(const pets::PetriNet& net, const QMap<QString, class PlaceItem*>& placeMap);
 
     // === Hlavní komponenty ===
     PetriNetScene*      scene_ = nullptr;

@@ -1,4 +1,9 @@
 /**
+ * @file runtime_state.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    runtime_state.h
  * @brief   Struktura pro kompletní stav sítě v reálném čase (pro GUI).
  * @author  Lukáš

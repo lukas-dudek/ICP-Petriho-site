@@ -1,5 +1,8 @@
-// output.h
-
+/**
+ * @file output.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETS_OUTPUT_H
 #define PETS_OUTPUT_H
 

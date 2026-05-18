@@ -1,5 +1,8 @@
-// inscription_engine.cpp
-
+/**
+ * @file inscription_engine.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #include "inscription_engine.h"
 #include "../model/petrinet.h"
 #include <fstream>
@@ -8,6 +11,7 @@
 #include <cstdio>
 #include <cstring>
 #include <chrono>
+#include <list>
 
 #ifdef _WIN32
   #include <windows.h>
@@ -40,7 +44,7 @@ bool InscriptionEngine::compile(const PetriNet& net,
 {
     unload();  // Uvolni případnou předchozí knihovnu
 
-    // 1. Vygeneruj .cpp zdroják
+    // Generování .cpp zdrojáku sítě
     std::string source = generate_source(net);
     std::string src_path = work_dir + "/pets_net.cpp";
     {
@@ -52,7 +56,7 @@ bool InscriptionEngine::compile(const PetriNet& net,
         out << source;
     }
 
-    // 2. Zkompiluj do .so / .dll
+    // Kompilace do sdílené knihovny
     lib_path_ = work_dir + "/libpets_net"
 #ifdef _WIN32
                 + ".dll";
@@ -63,7 +67,7 @@ bool InscriptionEngine::compile(const PetriNet& net,
         return false;
     }
 
-    // 3. Dynamicky načti
+    // Načtení zkompilované knihovny
     if (!load_library(lib_path_, error_msg)) {
         return false;
     }
@@ -219,25 +223,24 @@ std::string InscriptionEngine::generate_source(const PetriNet& net) const
     ss << "#include <cstdlib>\n";
     ss << "#include <string>\n\n";
 
-        ss << generate_context_externs(net);
+    ss << generate_context_externs(net);
+    ss << generate_builtin_wrappers(net);
 
-        ss << generate_builtin_wrappers(net);
-
-        ss << "\n// ==================== Guards ====================\n\n";
+    ss << "\n// Guards\n\n";
     for (const auto& t : net.transitions) {
         if (t.has_guard()) {
             ss << generate_guard_function(t) << "\n";
         }
     }
 
-        ss << "\n// ==================== Transition Actions ====================\n\n";
+    ss << "\n// Transition Actions\n\n";
     for (const auto& t : net.transitions) {
         if (t.action_code.has_value()) {
             ss << generate_action_function("action_" + t.id, t.action_code.value()) << "\n";
         }
     }
 
-        ss << "\n// ==================== Place Actions ====================\n\n";
+    ss << "\n// Place Actions\n\n";
     for (const auto& p : net.places) {
         if (p.place_action.has_value()) {
             ss << generate_action_function("place_action_" + p.id,
@@ -323,18 +326,6 @@ std::string InscriptionEngine::generate_guard_function(const Transition& t) cons
     std::ostringstream ss;
     ss << "extern \"C\" bool guard_" << t.id << "()\n";
     ss << "{\n";
-
-    // Vlož uživatelský výraz – pozor: valueof a defined musí být nahrazeny
-    // přímým přístupem k extern proměnným.
-    // Pro jednoduchost předpokládáme, že uživatel píše valueof(\"name\")
-    // a my to tady nijak nepřekládáme – musí to být C++ platný výraz.
-    // V reálné implementaci by tu byl preprocessor, který nahradí:
-    //   valueof(\"in\")    -> valueof_in
-    //   defined(\"in\")    -> defined_in
-    //   tokens(\"P1\")     -> tokens_P1
-    //   elapsed(\"P1\")    -> elapsed_P1
-    //   now()              -> now_ms
-
     ss << "    return (" << t.guard_expression.value() << ");\n";
     ss << "}\n";
 
@@ -369,10 +360,10 @@ bool InscriptionEngine::compile_to_shared_lib(const std::string& src_path,
     std::string cmd = "g++ -std=c++17 -shared -fPIC -O2 -o \"" + lib_path + "\" \"" + src_path + "\" 2>&1";
 #endif
 
-    // Zachyť výstup kompilátoru
+    // TODO: Přidat lepší detekci cesty ke kompilátoru, popen nemusí vždy fungovat spolehlivě.
     FILE* pipe = popen(cmd.c_str(), "r");
     if (!pipe) {
-        error_msg = "Cannot execute compiler";
+        error_msg = "Cannot execute compiler (g++ nenalezen?)";
         return false;
     }
 
@@ -400,13 +391,7 @@ bool InscriptionEngine::load_library(const std::string& lib_path,
         return false;
     }
 
-    // Najdi a nastav output_func pointer uvnitř knihovny
-    // (pokud tam je definován)
-    void* out_ptr = DLSYM(lib_handle_, "output_func");
-    if (out_ptr) {
-        // Pointer na pointer – složitější. Pro jednoduchost:
-        // Uvnitř knihovny output_func volá callback nastavený zvenčí.
-    }
+
 
     return true;
 }
@@ -453,13 +438,10 @@ void InscriptionEngine::set_extern_string(const std::string& name, const std::st
     if (!lib_handle_) return;
     void* ptr = get_symbol(name);
     if (ptr) {
-        // Pro char* ukazatel – nastav pointer na staticky uložený string.
-        // Uvnitř generovaného kódu je to const char*.
-        // Tady bychom měli alokovat a spravovat, pro jednoduchost
-        // použijeme statický buffer (není thread-safe!).
-        static std::unordered_map<std::string, std::string> string_storage;
-        string_storage[name] = value;
-        *static_cast<const char**>(ptr) = string_storage[name].c_str();
+        // FIXME: Udržovat paměť vyčištěnou, list string_storage může nekontrolovaně růst.
+        static std::list<std::string> string_storage;
+        string_storage.push_back(value);
+        *static_cast<const char**>(ptr) = string_storage.back().c_str();
     }
 }
 

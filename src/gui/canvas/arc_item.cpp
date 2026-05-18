@@ -1,3 +1,8 @@
+/**
+ * @file arc_item.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 /** @brief Implementace grafické reprezentace hrany. @author Jan */
 #include "arc_item.h"
 #include "place_item.h"

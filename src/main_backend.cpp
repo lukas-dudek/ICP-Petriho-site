@@ -1,5 +1,8 @@
-// main_backend.cpp
-
+/**
+ * @file main_backend.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -23,16 +26,16 @@ int main() {
 
   // T1
   Transition t1("T1");
-  t1.input_arcs.push_back({&net.places[0], 1});
-  t1.output_arcs.push_back({&net.places[1], 1});
+  t1.input_arcs.push_back({"P1", 1});
+  t1.output_arcs.push_back({"P2", 1});
   t1.input_event_name = "in";
   t1.priority = 0;
   net.transitions.push_back(t1);
 
   // T2
   Transition t2("T2");
-  t2.input_arcs.push_back({&net.places[1], 1});
-  t2.output_arcs.push_back({&net.places[0], 1});
+  t2.input_arcs.push_back({"P2", 1});
+  t2.output_arcs.push_back({"P1", 1});
   t2.delay_ms = 2000;
   t2.priority = 1;
   net.transitions.push_back(t2);

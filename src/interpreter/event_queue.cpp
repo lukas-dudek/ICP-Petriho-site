@@ -1,5 +1,8 @@
-// event_queue.cpp
-
+/**
+ * @file event_queue.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #include "event_queue.h"
 
 namespace pets {

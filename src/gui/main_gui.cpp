@@ -1,4 +1,9 @@
 /**
+ * @file main_gui.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    main_gui.cpp
  * @brief   Vstupní bod GUI aplikace pro editor a monitor Petriho sítí.
  * @author  Jan

@@ -1,5 +1,8 @@
-// event_queue.h
-
+/**
+ * @file event_queue.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETS_EVENT_QUEUE_H
 #define PETS_EVENT_QUEUE_H
 

@@ -1,4 +1,9 @@
 /**
+ * @file transition_dialog.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    transition_dialog.h
  * @brief   Dialog pro editaci vlastností přechodu.
  * @author  Jan

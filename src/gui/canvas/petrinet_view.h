@@ -1,3 +1,8 @@
+/**
+ * @file petrinet_view.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETRINET_VIEW_H
 #define PETRINET_VIEW_H
 

@@ -1,5 +1,8 @@
-// place.h
-
+/**
+ * @file place.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETS_PLACE_H
 #define PETS_PLACE_H
 
@@ -9,10 +12,12 @@
 
 namespace pets {
 
-// @brief Reprezentuje jedno místo v Petriho síti.
-// 
-// Každé místo má jednoznačný identifikátor, počáteční počet tokenů a volitelně
-// akci, která se provádí při každém přidání tokenu ("on add token").
+/**
+ * @brief Reprezentuje jedno místo v Petriho síti.
+ * 
+ * Každé místo má jednoznačný identifikátor, počáteční počet tokenů a volitelně
+ * akci, která se provádí při každém přidání tokenu ("on add token").
+ */
 class Place {
 public:
     

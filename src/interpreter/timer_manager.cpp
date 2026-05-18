@@ -1,5 +1,8 @@
-// timer_manager.cpp
-
+/**
+ * @file timer_manager.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #include "timer_manager.h"
 #include "../model/transition.h"
 #include <algorithm>

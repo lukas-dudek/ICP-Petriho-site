@@ -1,3 +1,8 @@
+/**
+ * @file log_panel.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 /** @brief Implementace panelu logu. @author Jan */
 #include "log_panel.h"
 #include "interpreter/log_entry.h"

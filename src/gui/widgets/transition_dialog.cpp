@@ -1,4 +1,9 @@
 /**
+ * @file transition_dialog.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
+/**
  * @file    transition_dialog.cpp
  * @brief   Implementace dialogu pro editaci přechodu.
  * @author  Jan

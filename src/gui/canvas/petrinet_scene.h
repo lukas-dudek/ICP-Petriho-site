@@ -1,3 +1,8 @@
+/**
+ * @file petrinet_scene.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETRINET_SCENE_H
 #define PETRINET_SCENE_H
 

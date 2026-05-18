@@ -1,5 +1,8 @@
-// inscription_engine.h
-
+/**
+ * @file inscription_engine.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETS_INSCRIPTION_ENGINE_H
 #define PETS_INSCRIPTION_ENGINE_H
 

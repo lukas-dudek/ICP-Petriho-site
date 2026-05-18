@@ -1,5 +1,5 @@
 # Root Makefile for Petri Net project
-# Authors: Lukáš, Jan, Matěj
+# Authors: Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
 
 .PHONY: all clean run test pack doxygen
 
@@ -17,7 +17,7 @@ test:
 	$(MAKE) -C src test
 
 pack: clean
-	zip -r xname01-xname02-xname03.zip src examples doc README.txt Makefile .gitignore
+	zip -r xdudekl00-xraskaj00-xzaoram00.zip src examples doc README.txt Makefile .gitignore
 
 doxygen:
 	doxygen Doxyfile 2>/dev/null || echo "Doxyfile not found - skipping"

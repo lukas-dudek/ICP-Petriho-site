@@ -1,3 +1,8 @@
+/**
+ * @file transition_item.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef TRANSITION_ITEM_H
 #define TRANSITION_ITEM_H
 

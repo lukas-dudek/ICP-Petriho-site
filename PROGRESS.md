@@ -66,5 +66,5 @@ Byl striktně dodržen "Algoritmus provádění interpretované sítě" popsaný
 - [x] **HOTOVO** - `make doxygen` generuje plnohodnotnou HTML dokumentaci s `SOURCE_BROWSER=YES`.
 - [x] **HOTOVO** - Konceptuální návrh uložen ve složce `doc/` jako UML diagram (`.pdf` / `.puml`).
 - [x] **HOTOVO** - Vytvořen soubor `README.txt`.
-- [x] **HOTOVO** - Přítomnost autorských komentářů (`@author xname0X`) v hlavičkách všech zdrojových kódů.
+- [x] **HOTOVO** - Přítomnost autorských komentářů v hlavičkách všech zdrojových kódů.
 - [x] **HOTOVO** - Možnost sestavit odevzdávkový archiv příkazem `make pack`.

@@ -1,10 +1,8 @@
 /**
- * @file    main_window.cpp
- * @brief   Implementace hlavního okna – menu, toolbar, dock panely, propojení s interpretrem.
- * @author  Jan
- * @date    2026-05-04
+ * @file main_window.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
  */
-
 #include "main_window.h"
 #include "canvas/petrinet_scene.h"
 #include "canvas/petrinet_view.h"
@@ -38,9 +36,7 @@ using pets::Interpreter;
 using pets::PetriNet;
 using pets::NetSerializer;
 
-// ======================================================================
 // Konstruktor / Destruktor
-// ======================================================================
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -70,13 +66,10 @@ MainWindow::~MainWindow()
     }
 }
 
-// ======================================================================
 // Menu Bar
-// ======================================================================
 
 void MainWindow::setupMenuBar()
 {
-    // === File ===
     QMenu* file_menu = menuBar()->addMenu(tr("&File"));
 
     file_menu->addAction(tr("&New Network"),      this, &MainWindow::onNewNetwork,
@@ -92,7 +85,6 @@ void MainWindow::setupMenuBar()
     file_menu->addAction(tr("E&xit"), this, &QApplication::quit,
                          QKeySequence(tr("Alt+F4")));
 
-    // === Edit ===
     QMenu* edit_menu = menuBar()->addMenu(tr("&Edit"));
 
     edit_menu->addAction(tr("Add &Place"),      this, &MainWindow::onAddPlace,
@@ -105,7 +97,6 @@ void MainWindow::setupMenuBar()
     edit_menu->addAction(tr("Edit &Variables..."),         this, &MainWindow::onEditVariables);
     edit_menu->addAction(tr("Edit Network &Properties..."), this, &MainWindow::onEditNetworkProperties);
 
-    // === Run ===
     QMenu* run_menu = menuBar()->addMenu(tr("&Run"));
 
     run_menu->addAction(tr("Generate && &Run"), this, &MainWindow::onGenerateAndRun,
@@ -113,7 +104,6 @@ void MainWindow::setupMenuBar()
     run_menu->addAction(tr("&Stop"),           this, &MainWindow::onStopInterpreter,
                         QKeySequence(tr("Shift+F5")));
 
-    // === View ===
     QMenu* view_menu = menuBar()->addMenu(tr("&View"));
 
     view_menu->addAction(tr("Zoom &In"),  this, &MainWindow::onZoomIn,
@@ -123,7 +113,6 @@ void MainWindow::setupMenuBar()
     view_menu->addAction(tr("&Fit to Window"), this, &MainWindow::onFitToWindow,
                          QKeySequence(tr("Ctrl+0")));
 
-    // === Help ===
     QMenu* help_menu = menuBar()->addMenu(tr("&Help"));
 
     help_menu->addAction(tr("&About..."), [this]() {
@@ -137,9 +126,7 @@ void MainWindow::setupMenuBar()
     });
 }
 
-// ======================================================================
 // Tool Bar
-// ======================================================================
 
 void MainWindow::setupToolBar()
 {
@@ -159,9 +146,7 @@ void MainWindow::setupToolBar()
     toolbar->addAction(tr("■ Stop"), this, &MainWindow::onStopInterpreter);
 }
 
-// ======================================================================
 // Dock Widgets (panely)
-// ======================================================================
 
 void MainWindow::setupDockWidgets()
 {
@@ -191,18 +176,14 @@ void MainWindow::setupDockWidgets()
     injection_dock->raise();
 }
 
-// ======================================================================
 // Status Bar
-// ======================================================================
 
 void MainWindow::setupStatusBar()
 {
     statusBar()->showMessage(tr("Režim: Editor"));
 }
 
-// ======================================================================
 // Connections
-// ======================================================================
 
 void MainWindow::setupConnections()
 {
@@ -216,9 +197,7 @@ void MainWindow::setupConnections()
             this, &MainWindow::onInjectInput);
 }
 
-// ======================================================================
 // Sloty – Editor
-// ======================================================================
 
 void MainWindow::onNewNetwork()
 {
@@ -391,9 +370,7 @@ void MainWindow::onEditNetworkProperties()
     statusBar()->showMessage(tr("Vlastnosti sítě aktualizovány"), 2000);
 }
 
-// ======================================================================
 // Sloty – Run
-// ======================================================================
 
 void MainWindow::onGenerateAndRun()
 {
@@ -452,23 +429,7 @@ void MainWindow::onStopInterpreter()
     statusBar()->showMessage(tr("Interpret zastaven"), 3000);
 }
 
-// ======================================================================
-// Sloty – Monitor
-// ======================================================================
-
-void MainWindow::onConnectToRunning()
-{
-    statusBar()->showMessage(tr("Připojení k externímu interpretu – není implementováno"), 3000);
-}
-
-void MainWindow::onDisconnect()
-{
-    statusBar()->showMessage(tr("Odpojení – není implementováno"), 3000);
-}
-
-// ======================================================================
 // Sloty – Data z interpretu
-// ======================================================================
 
 void MainWindow::onRuntimeStateReceived(const RuntimeState& state)
 {
@@ -485,9 +446,7 @@ void MainWindow::onLogEntryReceived(const LogEntry& entry)
     log_panel_->appendLog(entry);
 }
 
-// ======================================================================
 // Sloty – Injekce
-// ======================================================================
 
 void MainWindow::onInjectInput(const QString& inputName, const QString& value)
 {
@@ -500,41 +459,15 @@ void MainWindow::onInjectInput(const QString& inputName, const QString& value)
     }
 }
 
-// ======================================================================
 // Sloty – View
-// ======================================================================
 
 void MainWindow::onZoomIn()  { view_->zoomIn(); }
 void MainWindow::onZoomOut() { view_->zoomOut(); }
 void MainWindow::onFitToWindow() { view_->fitInView(); }
 
-// ======================================================================
 // Konverze scéna ↔ model
-// ======================================================================
 
-std::unique_ptr<PetriNet> MainWindow::sceneToModel() const
-{
-    auto net = std::make_unique<PetriNet>();
-    net->name = net_name_.toStdString();
-    net->comment = net_comment_.toStdString();
-
-    // Vstupy
-    for (const auto& name : net_inputs_) {
-        net->inputs.emplace_back(name.toStdString());
-    }
-
-    // Výstupy
-    for (const auto& name : net_outputs_) {
-        net->outputs.emplace_back(name.toStdString());
-    }
-
-    // Proměnné
-    for (const auto& v : net_variables_) {
-        net->variables.emplace_back(
-            v.type.toStdString(), v.name.toStdString(), v.init.toStdString());
-    }
-
-    // Místa
+void MainWindow::parsePlacesToModel(pets::PetriNet* net) const {
     for (auto* item : scene_->items()) {
         if (item->type() == PlaceItem::Type) {
             auto* pi = static_cast<PlaceItem*>(item);
@@ -548,8 +481,9 @@ std::unique_ptr<PetriNet> MainWindow::sceneToModel() const
                 action);
         }
     }
+}
 
-    // Přechody
+void MainWindow::parseTransitionsToModel(pets::PetriNet* net) const {
     for (auto* item : scene_->items()) {
         if (item->type() == TransitionItem::Type) {
             auto* ti = static_cast<TransitionItem*>(item);
@@ -565,19 +499,15 @@ std::unique_ptr<PetriNet> MainWindow::sceneToModel() const
             if (!ti->actionCode().isEmpty())
                 t.action_code = ti->actionCode().toStdString();
 
-            // Hrany – najdi ArcItems spojené s tímto přechodem
             for (auto* arcItem : scene_->items()) {
                 if (arcItem->type() == ArcItem::Type) {
                     auto* ai = static_cast<ArcItem*>(arcItem);
                     if (ai->transitionItem() == ti) {
-                        pets::Place* place = net->find_place(
-                            ai->placeItem()->placeId().toStdString());
-                        if (place) {
-                            if (ai->isInputArc()) {
-                                t.input_arcs.push_back({place, ai->weight()});
-                            } else {
-                                t.output_arcs.push_back({place, ai->weight()});
-                            }
+                        std::string pid = ai->placeItem()->placeId().toStdString();
+                        if (ai->isInputArc()) {
+                            t.input_arcs.push_back({pid, ai->weight()});
+                        } else {
+                            t.output_arcs.push_back({pid, ai->weight()});
                         }
                     }
                 }
@@ -586,15 +516,88 @@ std::unique_ptr<PetriNet> MainWindow::sceneToModel() const
             net->transitions.push_back(std::move(t));
         }
     }
+}
+
+std::unique_ptr<PetriNet> MainWindow::sceneToModel() const
+{
+    auto net = std::make_unique<PetriNet>();
+    net->name = net_name_.toStdString();
+    net->comment = net_comment_.toStdString();
+
+    for (const auto& name : net_inputs_) {
+        net->inputs.emplace_back(name.toStdString());
+    }
+
+    for (const auto& name : net_outputs_) {
+        net->outputs.emplace_back(name.toStdString());
+    }
+
+    for (const auto& v : net_variables_) {
+        net->variables.emplace_back(
+            v.type.toStdString(), v.name.toStdString(), v.init.toStdString());
+    }
+
+    parsePlacesToModel(net.get());
+    parseTransitionsToModel(net.get());
 
     return net;
+}
+
+void MainWindow::parsePlacesToScene(const PetriNet& net, QMap<QString, PlaceItem*>& placeMap) {
+    int placeIdx = 0;
+    for (const auto& p : net.places) {
+        int x = 150 + (placeIdx % 4) * 200;
+        int y = 100 + (placeIdx / 4) * 200;
+        auto* pi = scene_->addPlace(QPointF(x, y),
+            QString::fromStdString(p.id), p.initial_tokens);
+        if (p.place_action.has_value()) {
+            pi->setPlaceAction(QString::fromStdString(p.place_action.value()));
+        }
+        placeMap[QString::fromStdString(p.id)] = pi;
+        placeIdx++;
+    }
+}
+
+void MainWindow::parseTransitionsToScene(const PetriNet& net, const QMap<QString, PlaceItem*>& placeMap) {
+    int transIdx = 0;
+    for (const auto& t : net.transitions) {
+        int x = 350 + (transIdx % 4) * 200;
+        int y = 200 + (transIdx / 4) * 200;
+        auto* ti = scene_->addTransition(QPointF(x, y),
+            QString::fromStdString(t.id));
+
+        if (t.input_event_name.has_value())
+            ti->setInputEvent(QString::fromStdString(t.input_event_name.value()));
+        if (t.guard_expression.has_value())
+            ti->setGuardExpression(QString::fromStdString(t.guard_expression.value()));
+        if (t.delay_ms.has_value())
+            ti->setDelayMs(t.delay_ms.value());
+        if (t.action_code.has_value())
+            ti->setActionCode(QString::fromStdString(t.action_code.value()));
+        ti->setPriority(t.priority);
+
+        for (const auto& arc : t.input_arcs) {
+            auto* pi = placeMap.value(QString::fromStdString(arc.place_id), nullptr);
+            if (pi) {
+                scene_->addArc(pi, ti, arc.weight);
+            }
+        }
+
+        for (const auto& arc : t.output_arcs) {
+            auto* pi = placeMap.value(QString::fromStdString(arc.place_id), nullptr);
+            if (pi) {
+                scene_->addArc(ti, pi, arc.weight);
+            }
+        }
+
+        transIdx++;
+    }
 }
 
 void MainWindow::modelToScene(const PetriNet& net)
 {
     scene_->clear();
 
-    // Metadata
     net_name_ = QString::fromStdString(net.name);
     net_comment_ = QString::fromStdString(net.comment);
 
@@ -619,66 +622,12 @@ void MainWindow::modelToScene(const PetriNet& net)
 
     injection_panel_->setAvailableInputs(net_inputs_);
 
-    // Místa – rozlož na plátno v mřížce
-    int placeIdx = 0;
     QMap<QString, PlaceItem*> placeMap;
-    for (const auto& p : net.places) {
-        int x = 150 + (placeIdx % 4) * 200;
-        int y = 100 + (placeIdx / 4) * 200;
-        auto* pi = scene_->addPlace(QPointF(x, y),
-            QString::fromStdString(p.id), p.initial_tokens);
-        if (p.place_action.has_value()) {
-            pi->setPlaceAction(QString::fromStdString(p.place_action.value()));
-        }
-        placeMap[QString::fromStdString(p.id)] = pi;
-        placeIdx++;
-    }
-
-    // Přechody
-    int transIdx = 0;
-    for (const auto& t : net.transitions) {
-        int x = 350 + (transIdx % 4) * 200;
-        int y = 200 + (transIdx / 4) * 200;
-        auto* ti = scene_->addTransition(QPointF(x, y),
-            QString::fromStdString(t.id));
-
-        if (t.input_event_name.has_value())
-            ti->setInputEvent(QString::fromStdString(t.input_event_name.value()));
-        if (t.guard_expression.has_value())
-            ti->setGuardExpression(QString::fromStdString(t.guard_expression.value()));
-        if (t.delay_ms.has_value())
-            ti->setDelayMs(t.delay_ms.value());
-        if (t.action_code.has_value())
-            ti->setActionCode(QString::fromStdString(t.action_code.value()));
-        ti->setPriority(t.priority);
-
-        // Vstupní hrany
-        for (const auto& arc : t.input_arcs) {
-            if (arc.place) {
-                auto* pi = placeMap.value(QString::fromStdString(arc.place->id), nullptr);
-                if (pi) {
-                    scene_->addArc(pi, ti, arc.weight);
-                }
-            }
-        }
-
-        // Výstupní hrany
-        for (const auto& arc : t.output_arcs) {
-            if (arc.place) {
-                auto* pi = placeMap.value(QString::fromStdString(arc.place->id), nullptr);
-                if (pi) {
-                    scene_->addArc(ti, pi, arc.weight);
-                }
-            }
-        }
-
-        transIdx++;
-    }
+    parsePlacesToScene(net, placeMap);
+    parseTransitionsToScene(net, placeMap);
 }
 
-// ======================================================================
 // Pomocné
-// ======================================================================
 
 void MainWindow::updateWindowTitle()
 {

@@ -1,9 +1,13 @@
-// interpreter.cpp - behova smycka
-
+/**
+ * @file interpreter.cpp
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #include "interpreter.h"
 #include "inscription_engine.h"
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 namespace pets {
 
@@ -13,37 +17,11 @@ Interpreter::Interpreter(const PetriNet& net)
     : net_(net)
     , inscription_engine_(std::make_unique<InscriptionEngine>())
 {
-    // Fix pointers in net_ to point to net_.places instead of net.places
-    for (auto& t : net_.transitions) {
-        for (auto& arc : t.input_arcs) {
-            if (arc.place) {
-                auto it = std::find_if(net.places.begin(), net.places.end(),
-                    [&](const Place& p) { return &p == arc.place; });
-                if (it != net.places.end()) {
-                    auto index = std::distance(net.places.begin(), it);
-                    arc.place = &net_.places[index];
-                }
-            }
-        }
-        for (auto& arc : t.output_arcs) {
-            if (arc.place) {
-                auto it = std::find_if(net.places.begin(), net.places.end(),
-                    [&](const Place& p) { return &p == arc.place; });
-                if (it != net.places.end()) {
-                    auto index = std::distance(net.places.begin(), it);
-                    arc.place = &net_.places[index];
-                }
-            }
-        }
-    }
-
     net_.reset();
 
-    // Zkus zkompilovat inskripční kód
     std::string error;
     if (!inscription_engine_->compile(net_, "/tmp/pets_" + net_.name, error)) {
-        // Fallback: ponecháme bez akcí/stráží
-        // (v ostré verzi: logovat varování)
+        std::cerr << "Warning: JIT compilation failed: " << error << std::endl;
     }
 
     // Nastav output callback
@@ -122,7 +100,7 @@ void Interpreter::set_log_callback(LogCallback callback)
 
 void Interpreter::main_loop()
 {
-    log(LogType::INFO, "Interpreter started for net: " + net_.name);
+    log(LogType::INFO, "Interpret spuštěn pro síť: " + net_.name);
     notify_state();
 
     while (running_.load()) {
@@ -174,13 +152,13 @@ void Interpreter::main_loop()
             break;
 
         case EventType::STOP:
-            log(LogType::INFO, "Stop requested, shutting down...");
+            log(LogType::INFO, "Vyžádáno zastavení, ukončuji...");
             running_.store(false);
             break;
         }
     }
 
-    log(LogType::INFO, "Interpreter stopped for net: " + net_.name);
+    log(LogType::INFO, "Interpret zastaven pro síť: " + net_.name);
 }
 
 // stabilizace (okamzite prechody)
@@ -197,7 +175,7 @@ void Interpreter::stabilize()
             break;
         }
 
-        auto to_fire = get_independent_set(candidates);
+        auto to_fire = find_executable_transitions(candidates);
         if (to_fire.empty()) {
             break;
         }
@@ -237,15 +215,15 @@ bool Interpreter::is_transition_enabled(Transition* t) const
 {
     if (!t) return false;
 
-    // 1. Multiset enabling – kontrola tokenů
     for (const auto& arc : t->input_arcs) {
-        if (!arc.place) return false;
-        if (arc.place->current_tokens < arc.weight) {
+        auto* p = net_.find_place(arc.place_id);
+        if (!p) return false;
+        if (p->current_tokens < arc.weight) {
             return false;
         }
     }
 
-    // 2. Vyhodnocení stráže pomocí InscriptionEngine
+    // Vyhodnocení stráže pomocí InscriptionEngine
     if (t->has_guard() && inscription_engine_->is_loaded()) {
         inscription_engine_->setup_context(net_);
         if (!inscription_engine_->evaluate_guard(*t)) {
@@ -257,14 +235,14 @@ bool Interpreter::is_transition_enabled(Transition* t) const
 }
 
 
-std::vector<Transition*> Interpreter::get_independent_set(
+std::vector<Transition*> Interpreter::find_executable_transitions(
     const std::vector<Transition*>& candidates)
 {
-    struct TokenShadow {
+    struct tmp_tokens {
         Place* place;
         int    available;
     };
-    std::vector<TokenShadow> shadow;
+    std::vector<tmp_tokens> shadow;
     shadow.reserve(net_.places.size());
     for (auto& p : net_.places) {
         shadow.push_back({&p, p.current_tokens});
@@ -281,9 +259,10 @@ std::vector<Transition*> Interpreter::get_independent_set(
     for (auto* t : sorted) {
         bool can_fire = true;
         for (const auto& arc : t->input_arcs) {
+            auto* p = net_.find_place(arc.place_id);
             auto it = std::find_if(shadow.begin(), shadow.end(),
-                                   [&](const TokenShadow& ts) {
-                                       return ts.place == arc.place;
+                                   [&](const tmp_tokens& ts) {
+                                       return ts.place == p;
                                    });
             if (it == shadow.end() || it->available < arc.weight) {
                 can_fire = false;
@@ -294,9 +273,10 @@ std::vector<Transition*> Interpreter::get_independent_set(
         if (can_fire) {
             selected.push_back(t);
             for (const auto& arc : t->input_arcs) {
+                auto* p = net_.find_place(arc.place_id);
                 auto it = std::find_if(shadow.begin(), shadow.end(),
-                                       [&](const TokenShadow& ts) {
-                                           return ts.place == arc.place;
+                                       [&](const tmp_tokens& ts) {
+                                           return ts.place == p;
                                        });
                 if (it != shadow.end()) {
                     it->available -= arc.weight;
@@ -313,13 +293,13 @@ void Interpreter::fire_transition(Transition* t)
 {
     if (!t) return;
 
-    // vezmi tokeny
     for (const auto& arc : t->input_arcs) {
-        if (arc.place) {
-            arc.place->remove_tokens(arc.weight);
+        auto* p = net_.find_place(arc.place_id);
+        if (p) {
+            p->remove_tokens(arc.weight);
             log(LogType::PLACE_TOKENS_CHANGED,
-                "Place '" + arc.place->id + "': removed " + std::to_string(arc.weight)
-                + " token(s), now has " + std::to_string(arc.place->current_tokens));
+                "Místo '" + p->id + "': odebráno " + std::to_string(arc.weight)
+                + " tokenů, nyní má " + std::to_string(p->current_tokens));
         }
     }
 
@@ -331,23 +311,24 @@ void Interpreter::fire_transition(Transition* t)
 
     // pridej tokeny
     for (const auto& arc : t->output_arcs) {
-        if (arc.place) {
-            arc.place->add_tokens(arc.weight);
+        auto* p = net_.find_place(arc.place_id);
+        if (p) {
+            p->add_tokens(arc.weight);
             log(LogType::PLACE_TOKENS_CHANGED,
-                "Place '" + arc.place->id + "': added " + std::to_string(arc.weight)
-                + " token(s), now has " + std::to_string(arc.place->current_tokens));
+                "Místo '" + p->id + "': přidáno " + std::to_string(arc.weight)
+                + " tokenů, nyní má " + std::to_string(p->current_tokens));
 
             // akce mista
-            if (arc.place->place_action.has_value() && inscription_engine_->is_loaded()) {
+            if (p->place_action.has_value() && inscription_engine_->is_loaded()) {
                 inscription_engine_->setup_context(net_);
-                inscription_engine_->execute_place_action(*arc.place);
+                inscription_engine_->execute_place_action(*p);
             }
         }
     }
 
     // zaloguj
     log(LogType::TRANSITION_FIRED,
-        "Transition '" + t->id + "' fired");
+        "Přechod '" + t->id + "' odpálen");
 
     // zrus casovace
     timer_manager_.cancel(t);
@@ -364,13 +345,14 @@ void Interpreter::schedule_delayed()
             // Spočítej "current_tokens" jako hash pro detekci duplicity
             int token_sum = 0;
             for (const auto& arc : t.input_arcs) {
-                if (arc.place) token_sum += arc.place->current_tokens;
+                auto* p = net_.find_place(arc.place_id);
+                if (p) token_sum += p->current_tokens;
             }
 
             timer_manager_.schedule(&t, t.delay_ms.value(), token_sum);
             log(LogType::TIMEOUT_SCHEDULED,
-                "Scheduled timeout for transition '" + t.id
-                + "' in " + std::to_string(t.delay_ms.value()) + " ms");
+                "Naplánován timeout pro přechod '" + t.id
+                + "' za " + std::to_string(t.delay_ms.value()) + " ms");
         }
     }
 }
@@ -381,14 +363,14 @@ void Interpreter::handle_timeout(Transition* t)
     if (!t) return;
 
     log(LogType::TIMEOUT_EXPIRED,
-        "Timeout expired for transition '" + t->id + "'");
+        "Timeout vypršel pro přechod '" + t->id + "'");
 
     if (is_transition_enabled(t)) {
         fire_transition(t);
     } else {
         log(LogType::TIMEOUT_IGNORED,
-            "Timeout for transition '" + t->id
-            + "' ignored – no longer enabled");
+            "Timeout pro přechod '" + t->id
+            + "' ignorován – přechod již není povolen");
     }
 }
 
@@ -399,13 +381,13 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
     auto* input = net_.find_input(name);
     if (!input) {
         log(LogType::INFO,
-            "Ignored input event '" + name + "' – no such input declared");
+            "Ignorována vstupní událost '" + name + "' – neznámý vstup");
         return;
     }
 
     input->set_value(value);
     log(LogType::INPUT_RECEIVED,
-        "Input '" + name + "' set to '" + value + "'");
+        "Vstup '" + name + "' nastaven na '" + value + "'");
     notify_state();
 
     // Aktivuj přechody navázané na tuto událost
@@ -436,7 +418,7 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
 
     // Okamžité – zařaď do stabilizační smyčky
     if (!immediate.empty()) {
-        auto to_fire = get_independent_set(immediate);
+        auto to_fire = find_executable_transitions(immediate);
         std::sort(to_fire.begin(), to_fire.end(),
                   [](Transition* a, Transition* b) {
                       return a->priority < b->priority;
@@ -451,12 +433,13 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
     for (auto* t : delayed) {
         int token_sum = 0;
         for (const auto& arc : t->input_arcs) {
-            if (arc.place) token_sum += arc.place->current_tokens;
+            auto* p = net_.find_place(arc.place_id);
+            if (p) token_sum += p->current_tokens;
         }
         timer_manager_.schedule(t, t->delay_ms.value(), token_sum);
         log(LogType::TIMEOUT_SCHEDULED,
-            "Scheduled (event-driven) timeout for transition '" + t->id
-            + "' in " + std::to_string(t->delay_ms.value()) + " ms");
+            "Naplánován (event) timeout pro přechod '" + t->id
+            + "' za " + std::to_string(t->delay_ms.value()) + " ms");
     }
 }
 

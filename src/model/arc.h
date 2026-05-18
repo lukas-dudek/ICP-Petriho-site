@@ -1,23 +1,26 @@
-// arc.h
-
+/**
+ * @file arc.h
+ * @author Lukáš Dudek (xdudekl00), Jan Raška (xraskaj00), Matěj Zaoral (xzaoram00)
+ * @brief 
+ */
 #ifndef PETS_ARC_H
 #define PETS_ARC_H
 
+#include <string>
+
 namespace pets {
 
-// Forward deklarace
-class Place;
-
-// @brief Struktura reprezentující orientovanou hranu mezi místem a přechodem.
-// 
-// Váha udává, kolik tokenů se spotřebuje (vstupní hrana) nebo vyrobí (výstupní hrana).
-// Minimální váha je 1.
+/**
+ * @brief Struktura reprezentující orientovanou hranu mezi místem a přechodem.
+ * 
+ * Váha udává, kolik tokenů se spotřebuje (vstupní hrana) nebo vyrobí (výstupní hrana).
+ */
 struct Arc {
-    Place* place = nullptr;   ///< Ukazatel na místo
-    int    weight = 1;        ///< Váha hrany (>= 1)
+    std::string place_id;
+    int weight = 1;
 
     Arc() = default;
-    Arc(Place* p, int w) : place(p), weight(w) {}
+    Arc(const std::string& pid, int w) : place_id(pid), weight(w) {}
 };
 
 } // namespace pets
