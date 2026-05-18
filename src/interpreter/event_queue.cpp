@@ -1,9 +1,4 @@
-/**
- * @file    event_queue.cpp
- * @brief   Implementace thread-safe fronty událostí.
- * @author  Lukáš
- * @date    2026-05-04
- */
+// event_queue.cpp
 
 #include "event_queue.h"
 

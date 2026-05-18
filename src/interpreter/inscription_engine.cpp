@@ -1,9 +1,4 @@
-/**
- * @file    inscription_engine.cpp
- * @brief   Implementace JIT kompilace a vyhodnocování C/C++ výrazů.
- * @author  Lukáš
- * @date    2026-05-04
- */
+// inscription_engine.cpp
 
 #include "inscription_engine.h"
 #include "../model/petrinet.h"
@@ -30,18 +25,14 @@
 
 namespace pets {
 
-// ======================================================================
 // Destruktor
-// ======================================================================
 
 InscriptionEngine::~InscriptionEngine()
 {
     unload();
 }
 
-// ======================================================================
 // Kompilace sítě do sdílené knihovny
-// ======================================================================
 
 bool InscriptionEngine::compile(const PetriNet& net,
                                 const std::string& work_dir,
@@ -96,9 +87,7 @@ void InscriptionEngine::unload()
     }
 }
 
-// ======================================================================
 // Nastavení kontextu
-// ======================================================================
 
 void InscriptionEngine::setup_context(const PetriNet& net)
 {
@@ -145,9 +134,7 @@ void InscriptionEngine::set_output_callback(OutputFunc callback)
     output_callback_ = std::move(callback);
 }
 
-// ======================================================================
 // Vyhodnocení stráže / akce
-// ======================================================================
 
 bool InscriptionEngine::evaluate_guard(const Transition& t)
 {
@@ -214,9 +201,7 @@ void InscriptionEngine::execute_place_action(const Place& p)
     fn();
 }
 
-// ======================================================================
 // Generování C++ zdrojáku
-// ======================================================================
 
 std::string InscriptionEngine::generate_source(const PetriNet& net) const
 {
@@ -234,30 +219,25 @@ std::string InscriptionEngine::generate_source(const PetriNet& net) const
     ss << "#include <cstdlib>\n";
     ss << "#include <string>\n\n";
 
-    // ==================== Extern proměnné (kontext) ====================
-    ss << generate_context_externs(net);
+        ss << generate_context_externs(net);
 
-    // ==================== Vestavěné wrapper funkce ====================
-    ss << generate_builtin_wrappers(net);
+        ss << generate_builtin_wrappers(net);
 
-    // ==================== Strážní funkce ====================
-    ss << "\n// ==================== Guards ====================\n\n";
+        ss << "\n// ==================== Guards ====================\n\n";
     for (const auto& t : net.transitions) {
         if (t.has_guard()) {
             ss << generate_guard_function(t) << "\n";
         }
     }
 
-    // ==================== Akce přechodů ====================
-    ss << "\n// ==================== Transition Actions ====================\n\n";
+        ss << "\n// ==================== Transition Actions ====================\n\n";
     for (const auto& t : net.transitions) {
         if (t.action_code.has_value()) {
             ss << generate_action_function("action_" + t.id, t.action_code.value()) << "\n";
         }
     }
 
-    // ==================== Akce míst ====================
-    ss << "\n// ==================== Place Actions ====================\n\n";
+        ss << "\n// ==================== Place Actions ====================\n\n";
     for (const auto& p : net.places) {
         if (p.place_action.has_value()) {
             ss << generate_action_function("place_action_" + p.id,
@@ -377,9 +357,7 @@ std::string InscriptionEngine::generate_action_function(const std::string& func_
     return ss.str();
 }
 
-// ======================================================================
 // Dynamická kompilace a načítání
-// ======================================================================
 
 bool InscriptionEngine::compile_to_shared_lib(const std::string& src_path,
                                               const std::string& lib_path,
@@ -450,9 +428,7 @@ void* InscriptionEngine::get_symbol(const std::string& name)
     return ptr;
 }
 
-// ======================================================================
 // Settery kontextových proměnných
-// ======================================================================
 
 void InscriptionEngine::set_extern_int(const std::string& name, int value)
 {

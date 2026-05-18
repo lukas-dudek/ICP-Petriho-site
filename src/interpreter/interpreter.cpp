@@ -1,15 +1,4 @@
-/**
- * @file    interpreter.cpp
- * @brief   Implementace hlavní smyčky interpretované Petriho sítě.
- * @author  Lukáš
- * @date    2026-05-04
- *
- * Integruje:
- *  - InscriptionEngine (JIT kompilace C++ výrazů)
- *  - TimerManager (zpožděné přechody)
- *  - EventQueue (pasivní čekání s timeoutem)
- *  - Deterministický výběr max nezávislé množiny
- */
+// interpreter.cpp - behova smycka
 
 #include "interpreter.h"
 #include "inscription_engine.h"
@@ -18,9 +7,7 @@
 
 namespace pets {
 
-// ======================================================================
-// Konstruktor / Destruktor
-// ======================================================================
+// konstruktor a destruktor
 
 Interpreter::Interpreter(const PetriNet& net)
     : net_(net)
@@ -77,28 +64,26 @@ Interpreter::~Interpreter()
     stop();
 }
 
-// ======================================================================
-// Životní cyklus
-// ======================================================================
+// rizeni smycky
 
 void Interpreter::start()
 {
-    if (running_.load(std::memory_order_acquire)) {
+    if (running_.load()) {
         return;
     }
 
     net_.reset();
-    running_.store(true, std::memory_order_release);
+    running_.store(true);
     main_thread_ = std::make_unique<std::thread>(&Interpreter::main_loop, this);
 }
 
 void Interpreter::stop()
 {
-    if (!running_.load(std::memory_order_acquire)) {
+    if (!running_.load()) {
         return;
     }
 
-    running_.store(false, std::memory_order_release);
+    running_.store(false);
     event_queue_.push(Event::make_stop());
 
     if (main_thread_ && main_thread_->joinable()) {
@@ -109,21 +94,17 @@ void Interpreter::stop()
 
 bool Interpreter::is_running() const
 {
-    return running_.load(std::memory_order_acquire);
+    return running_.load();
 }
 
-// ======================================================================
-// Vstup z GUI
-// ======================================================================
+// gui vstupy
 
 void Interpreter::inject_input(const std::string& input_name, const std::string& value)
 {
     event_queue_.push(Event::make_input(input_name, value));
 }
 
-// ======================================================================
-// Callbacky pro GUI
-// ======================================================================
+// gui callbacky
 
 void Interpreter::set_state_callback(StateCallback callback)
 {
@@ -137,25 +118,23 @@ void Interpreter::set_log_callback(LogCallback callback)
     log_callback_ = std::move(callback);
 }
 
-// ======================================================================
-// Hlavní smyčka
-// ======================================================================
+// hlavni beh
 
 void Interpreter::main_loop()
 {
     log(LogType::INFO, "Interpreter started for net: " + net_.name);
     notify_state();
 
-    while (running_.load(std::memory_order_acquire)) {
+    while (running_.load()) {
 
-        // === (1) Reakce bez čekání – stabilizace ===
-        do_reaction_without_waiting();
+        // stabilizace
+        stabilize();
 
-        // === (2) Naplánování zpožděných přechodů ===
-        schedule_delayed_transitions();
+        // casovace
+        schedule_delayed();
         notify_state();
 
-        // === (3) Pasivní čekání (s timeoutem pro časovače) ===
+        // cekani
         int64_t next_timeout = timer_manager_.next_expiry_ms();
         Event event;
 
@@ -179,11 +158,11 @@ void Interpreter::main_loop()
             event = event_queue_.wait();
         }
 
-        if (!running_.load(std::memory_order_acquire)) {
+        if (!running_.load()) {
             break;
         }
 
-        // === (4) Zpracování probuzení ===
+        // probuzeni
         switch (event.type) {
 
         case EventType::TIMEOUT:
@@ -196,7 +175,7 @@ void Interpreter::main_loop()
 
         case EventType::STOP:
             log(LogType::INFO, "Stop requested, shutting down...");
-            running_.store(false, std::memory_order_release);
+            running_.store(false);
             break;
         }
     }
@@ -204,23 +183,21 @@ void Interpreter::main_loop()
     log(LogType::INFO, "Interpreter stopped for net: " + net_.name);
 }
 
-// ======================================================================
-// (1) Reakce bez čekání – stabilizace
-// ======================================================================
+// stabilizace (okamzite prechody)
 
-void Interpreter::do_reaction_without_waiting()
+void Interpreter::stabilize()
 {
     bool progress = true;
 
     while (progress) {
         progress = false;
 
-        auto candidates = find_enabled_immediate_transitions();
+        auto candidates = get_enabled();
         if (candidates.empty()) {
             break;
         }
 
-        auto to_fire = find_max_independent_set(candidates);
+        auto to_fire = get_independent_set(candidates);
         if (to_fire.empty()) {
             break;
         }
@@ -239,11 +216,8 @@ void Interpreter::do_reaction_without_waiting()
     }
 }
 
-// ======================================================================
-// Vyhledání enabled okamžitých přechodů
-// ======================================================================
 
-std::vector<Transition*> Interpreter::find_enabled_immediate_transitions()
+std::vector<Transition*> Interpreter::get_enabled()
 {
     std::vector<Transition*> result;
 
@@ -258,9 +232,6 @@ std::vector<Transition*> Interpreter::find_enabled_immediate_transitions()
     return result;
 }
 
-// ======================================================================
-// Kontrola, zda je přechod enabled
-// ======================================================================
 
 bool Interpreter::is_transition_enabled(Transition* t) const
 {
@@ -285,11 +256,8 @@ bool Interpreter::is_transition_enabled(Transition* t) const
     return true;
 }
 
-// ======================================================================
-// Maximální množina nezávislých přechodů
-// ======================================================================
 
-std::vector<Transition*> Interpreter::find_max_independent_set(
+std::vector<Transition*> Interpreter::get_independent_set(
     const std::vector<Transition*>& candidates)
 {
     struct TokenShadow {
@@ -340,15 +308,12 @@ std::vector<Transition*> Interpreter::find_max_independent_set(
     return selected;
 }
 
-// ======================================================================
-// Odpálení přechodu (fire)
-// ======================================================================
 
 void Interpreter::fire_transition(Transition* t)
 {
     if (!t) return;
 
-    // 1. Odeber tokeny
+    // vezmi tokeny
     for (const auto& arc : t->input_arcs) {
         if (arc.place) {
             arc.place->remove_tokens(arc.weight);
@@ -358,13 +323,13 @@ void Interpreter::fire_transition(Transition* t)
         }
     }
 
-    // 2. Proveď akci přechodu (InscriptionEngine)
+    // proved akci
     if (t->action_code.has_value() && inscription_engine_->is_loaded()) {
         inscription_engine_->setup_context(net_);
         inscription_engine_->execute_transition_action(*t);
     }
 
-    // 3. Přidej tokeny
+    // pridej tokeny
     for (const auto& arc : t->output_arcs) {
         if (arc.place) {
             arc.place->add_tokens(arc.weight);
@@ -372,7 +337,7 @@ void Interpreter::fire_transition(Transition* t)
                 "Place '" + arc.place->id + "': added " + std::to_string(arc.weight)
                 + " token(s), now has " + std::to_string(arc.place->current_tokens));
 
-            // 4. Place action – při každém přidání tokenu
+            // akce mista
             if (arc.place->place_action.has_value() && inscription_engine_->is_loaded()) {
                 inscription_engine_->setup_context(net_);
                 inscription_engine_->execute_place_action(*arc.place);
@@ -380,20 +345,16 @@ void Interpreter::fire_transition(Transition* t)
         }
     }
 
-    // 5. Zaloguj odpálení
+    // zaloguj
     log(LogType::TRANSITION_FIRED,
         "Transition '" + t->id + "' fired");
 
-    // 6. Zruš případné časovače pro tento přechod
-    //    (doporučená sémantika: timeout už není potřeba)
+    // zrus casovace
     timer_manager_.cancel(t);
 }
 
-// ======================================================================
-// (2) Naplánování zpožděných přechodů
-// ======================================================================
 
-void Interpreter::schedule_delayed_transitions()
+void Interpreter::schedule_delayed()
 {
     for (auto& t : net_.transitions) {
         if (!t.is_delayed()) continue;
@@ -414,9 +375,6 @@ void Interpreter::schedule_delayed_transitions()
     }
 }
 
-// ======================================================================
-// (4a) Zpracování timeoutu
-// ======================================================================
 
 void Interpreter::handle_timeout(Transition* t)
 {
@@ -434,9 +392,6 @@ void Interpreter::handle_timeout(Transition* t)
     }
 }
 
-// ======================================================================
-// (4b) Zpracování vstupní události
-// ======================================================================
 
 void Interpreter::handle_input_event(const std::string& name, const std::string& value)
 {
@@ -481,7 +436,7 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
 
     // Okamžité – zařaď do stabilizační smyčky
     if (!immediate.empty()) {
-        auto to_fire = find_max_independent_set(immediate);
+        auto to_fire = get_independent_set(immediate);
         std::sort(to_fire.begin(), to_fire.end(),
                   [](Transition* a, Transition* b) {
                       return a->priority < b->priority;
@@ -505,9 +460,6 @@ void Interpreter::handle_input_event(const std::string& name, const std::string&
     }
 }
 
-// ======================================================================
-// Logování a notifikace GUI
-// ======================================================================
 
 void Interpreter::log(LogType type, const std::string& message, const std::string& detail)
 {

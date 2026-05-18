@@ -1,18 +1,4 @@
-/**
- * @file    net_serializer.h
- * @brief   Parser a serializer textového formátu Petriho sítě.
- * @author  Matěj
- * @date    2026-05-04
- *
- * Formát souboru odpovídá specifikaci ze zadání:
- *   Jméno sítě: ...
- *   Komentář: ...
- *   Vstupy: ...
- *   Výstupy: ...
- *   Proměnné: ...
- *   Místa: ...
- *   Přechody: ...
- */
+// net_serializer.h
 
 #ifndef PETS_NET_SERIALIZER_H
 #define PETS_NET_SERIALIZER_H
@@ -23,39 +9,29 @@ namespace pets {
 
 class PetriNet;
 
-/**
- * @brief Umožňuje uložit a načíst Petriho síť z/do textového souboru.
- */
+// @brief Umožňuje uložit a načíst Petriho síť z/do textového souboru.
 class NetSerializer {
 public:
-    /**
-     * @brief Uloží síť do textového souboru.
-     * @param net Model sítě.
-     * @param path Cesta k výstupnímu souboru.
-     * @param error Pokud selže, obsahuje popis chyby.
-     * @return true při úspěchu.
-     */
+    // @brief Uloží síť do textového souboru.
+// @param net Model sítě.
+// @param path Cesta k výstupnímu souboru.
+// @param error Pokud selže, obsahuje popis chyby.
+// @return true při úspěchu.
     static bool save(const PetriNet& net, const std::string& path,
                      std::string& error);
 
-    /**
-     * @brief Serializuje síť do řetězce (textový formát).
-     */
+    // @brief Serializuje síť do řetězce (textový formát).
     static std::string serialize(const PetriNet& net);
 
-    /**
-     * @brief Načte síť z textového souboru.
-     * @param path Cesta ke vstupnímu souboru.
-     * @param net Výstupní model sítě (bude vyčištěn a naplněn).
-     * @param error Pokud selže, obsahuje popis chyby.
-     * @return true při úspěchu.
-     */
+    // @brief Načte síť z textového souboru.
+// @param path Cesta ke vstupnímu souboru.
+// @param net Výstupní model sítě (bude vyčištěn a naplněn).
+// @param error Pokud selže, obsahuje popis chyby.
+// @return true při úspěchu.
     static bool load(const std::string& path, PetriNet& net,
                      std::string& error);
 
-    /**
-     * @brief Naparsuje síť z řetězce.
-     */
+    // @brief Naparsuje síť z řetězce.
     static bool parse(const std::string& content, PetriNet& net,
                       std::string& error);
 };

@@ -1,9 +1,4 @@
-/**
- * @file    interpreter.h
- * @brief   Běhové jádro interpretované Petriho sítě – event-driven smyčka.
- * @author  Lukáš
- * @date    2026-05-04
- */
+// interpreter.h - behova smycka interpretu
 
 #ifndef PETS_INTERPRETER_H
 #define PETS_INTERPRETER_H
@@ -24,9 +19,7 @@ namespace pets {
 
 class InscriptionEngine;  // forward
 
-/**
- * @brief Hlavní třída interpretu Petriho sítě.
- */
+// Hlavni trida interpretu Petriho site
 class Interpreter {
 public:
     using StateCallback = std::function<void(const RuntimeState&)>;
@@ -49,18 +42,18 @@ public:
 
     RuntimeState get_current_state() const;
 
-    /** @brief Veřejné pro testování */
-    std::vector<Transition*> find_max_independent_set(
+    // Verejne pro testovani
+    std::vector<Transition*> get_independent_set(
         const std::vector<Transition*>& candidates);
 
 private:
     void main_loop();
-    void do_reaction_without_waiting();
-    void schedule_delayed_transitions();
+    void stabilize();
+    void schedule_delayed();
     void handle_timeout(Transition* t);
     void handle_input_event(const std::string& name, const std::string& value);
 
-    std::vector<Transition*> find_enabled_immediate_transitions();
+    std::vector<Transition*> get_enabled();
     bool is_transition_enabled(Transition* t) const;
     void fire_transition(Transition* t);
 

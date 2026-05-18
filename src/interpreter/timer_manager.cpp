@@ -1,9 +1,4 @@
-/**
- * @file    timer_manager.cpp
- * @brief   Implementace správy časovačů.
- * @author  Lukáš
- * @date    2026-05-04
- */
+// timer_manager.cpp
 
 #include "timer_manager.h"
 #include "../model/transition.h"

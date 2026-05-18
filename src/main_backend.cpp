@@ -1,12 +1,4 @@
-/**
- * @file    main.cpp
- * @brief   Hlavní vstupní bod programu – testování backendu Petriho sítě.
- * @author  Lukáš
- * @date    2026-05-04
- *
- * Tento soubor slouží pro samostatné testování backendu bez GUI.
- * Produkčně bude backend spouštěn jako součást hlavní aplikace (Qt + GUI).
- */
+// main_backend.cpp
 
 #include <chrono>
 #include <iostream>
@@ -17,56 +9,33 @@
 
 using namespace pets;
 
-/**
- * @brief Vytvoří testovací Petriho síť (jednoduchý TOF_PN_5s z příkladu v
- * zadání)
- */
-PetriNet create_test_net() {
+int main() {
+  std::cout << "--- Petri Net Backend Test ---\n";
+
   PetriNet net;
   net.name = "TestNet";
-  net.comment = "Jednoduchá testovací síť";
-
-  // Vstupy
+  net.comment = "jednoducha sit";
   net.inputs.emplace_back("in");
-
-  // Výstupy
   net.outputs.emplace_back("out");
-
-  // Proměnné
   net.variables.emplace_back("int", "counter", "0");
-
-  // Místa
-  net.places.emplace_back("P1", 1); // Počáteční token
+  net.places.emplace_back("P1", 1); // startovni token
   net.places.emplace_back("P2", 0);
 
-  // Přechod T1: P1 -> P2, na událost "in"
-  {
-    Transition t("T1");
-    t.input_arcs.push_back({&net.places[0], 1});
-    t.output_arcs.push_back({&net.places[1], 1});
-    t.input_event_name = "in";
-    t.priority = 0;
-    net.transitions.push_back(t);
-  }
+  // T1
+  Transition t1("T1");
+  t1.input_arcs.push_back({&net.places[0], 1});
+  t1.output_arcs.push_back({&net.places[1], 1});
+  t1.input_event_name = "in";
+  t1.priority = 0;
+  net.transitions.push_back(t1);
 
-  // Přechod T2: P2 -> P1, interní, zpožděný o 2000 ms
-  {
-    Transition t("T2");
-    t.input_arcs.push_back({&net.places[1], 1});
-    t.output_arcs.push_back({&net.places[0], 1});
-    t.delay_ms = 2000;
-    t.priority = 1;
-    net.transitions.push_back(t);
-  }
-
-  return net;
-}
-
-int main() {
-  std::cout << "=== Petri Net Interpreter - Backend Test ===" << std::endl;
-
-  // Vytvoř síť
-  auto net = create_test_net();
+  // T2
+  Transition t2("T2");
+  t2.input_arcs.push_back({&net.places[1], 1});
+  t2.output_arcs.push_back({&net.places[0], 1});
+  t2.delay_ms = 2000;
+  t2.priority = 1;
+  net.transitions.push_back(t2);
 
   std::string error;
   if (!net.validate(error)) {
@@ -92,19 +61,16 @@ int main() {
     std::cout << std::endl;
   });
 
-  // Start
   interp.start();
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-  // Injektuj vstup
-  std::cout << "\n>>> Injecting input 'in' = 'hello'" << std::endl;
+  std::cout << "Posilam in = hello\n";
   interp.inject_input("in", "hello");
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
-  // Zastav
-  std::cout << "\n>>> Stopping interpreter..." << std::endl;
+  std::cout << "Ukoncuji...\n";
   interp.stop();
 
-  std::cout << "\n=== Test Complete ===" << std::endl;
+  std::cout << "--- Hotovo ---\n";
   return 0;
 }

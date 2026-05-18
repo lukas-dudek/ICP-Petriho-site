@@ -1,9 +1,4 @@
-/**
- * @file    petrinet.cpp
- * @brief   Implementace PetriNet – vyhledávání a validace
- * @author  Lukáš
- * @date    2026-05-04
- */
+// petrinet.cpp
 
 #include "petrinet.h"
 #include <algorithm>
@@ -11,7 +6,6 @@
 
 namespace pets {
 
-// ==================== Vyhledávací metody ====================
 
 Place* PetriNet::find_place(const std::string& id)
 {
@@ -83,7 +77,6 @@ const Variable* PetriNet::find_variable(const std::string& name) const
     return (it != variables.end()) ? &(*it) : nullptr;
 }
 
-// ==================== Validace ====================
 
 bool PetriNet::validate(std::string& error_msg) const
 {
@@ -188,7 +181,6 @@ bool PetriNet::validate(std::string& error_msg) const
     return true;
 }
 
-// ==================== Pomocné ====================
 
 void PetriNet::reset()
 {

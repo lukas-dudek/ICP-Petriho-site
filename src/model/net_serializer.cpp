@@ -1,9 +1,4 @@
-/**
- * @file    net_serializer.cpp
- * @brief   Implementace parseru a serializeru textového formátu sítě.
- * @author  Matěj
- * @date    2026-05-04
- */
+// net_serializer.cpp
 
 #include "net_serializer.h"
 #include "petrinet.h"
@@ -15,9 +10,7 @@
 
 namespace pets {
 
-// ======================================================================
 // Pomocné funkce
-// ======================================================================
 
 static std::string trim(const std::string& s)
 {
@@ -27,10 +20,8 @@ static std::string trim(const std::string& s)
     return s.substr(start, end - start + 1);
 }
 
-/**
- * @brief Extrahuje blok kódu ohraničený { ... } ze stringu.
- *        Vrací obsah bez vnějších závorek, trimovaný.
- */
+// @brief Extrahuje blok kódu ohraničený { ... } ze stringu.
+//        Vrací obsah bez vnějších závorek, trimovaný.
 static std::string extract_braces(const std::string& s)
 {
     auto first = s.find('{');
@@ -41,9 +32,7 @@ static std::string extract_braces(const std::string& s)
     return trim(s.substr(first + 1, last - first - 1));
 }
 
-// ======================================================================
 // Serialize (model → text)
-// ======================================================================
 
 std::string NetSerializer::serialize(const PetriNet& net)
 {
@@ -153,9 +142,7 @@ bool NetSerializer::save(const PetriNet& net, const std::string& path,
     return true;
 }
 
-// ======================================================================
 // Parse (text → model)
-// ======================================================================
 
 bool NetSerializer::parse(const std::string& content, PetriNet& net,
                           std::string& error)

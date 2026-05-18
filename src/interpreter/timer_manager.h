@@ -1,14 +1,5 @@
 
-/**
- * @file    timer_manager.h
- * @brief   Správa časovačů pro zpožděné přechody.
- * @author  Lukáš
- * @date    2026-05-04
- *
- * Každý časovač je navázán na konkrétní přechod a vyprší po uplynutí
- * definovaného zpoždění (@delay_ms). Časovač se zakládá pouze pokud
- * pro daný přechod ještě neběží časovač se stejnými parametry.
- */
+// timer_manager.h
 
 #ifndef PETS_TIMER_MANAGER_H
 #define PETS_TIMER_MANAGER_H
@@ -23,23 +14,17 @@ namespace pets {
 
 class Transition;
 
-/**
- * @brief Spravuje kolekci aktivních časovačů.
- */
+// @brief Spravuje kolekci aktivních časovačů.
 class TimerManager {
 public:
-    /**
-     * @brief Naplánuje timeout pro přechod (pokud ještě neběží se stejnými parametry).
-     * @param t Přechod, který se má odpálit po timeoutu.
-     * @param delay_ms Zpoždění v milisekundách.
-     * @param current_tokens Aktuální marking pro porovnání "stejných parametrů".
-     */
+    // @brief Naplánuje timeout pro přechod (pokud ještě neběží se stejnými parametry).
+// @param t Přechod, který se má odpálit po timeoutu.
+// @param delay_ms Zpoždění v milisekundách.
+// @param current_tokens Aktuální marking pro porovnání "stejných parametrů".
     void schedule(Transition* t, int64_t delay_ms, int current_tokens);
 
-    /**
-     * @brief Najde všechny přechody, jejichž časovač právě vypršel.
-     * @return Seznam přechodů k odpálení (může být prázdný).
-     */
+    // @brief Najde všechny přechody, jejichž časovač právě vypršel.
+// @return Seznam přechodů k odpálení (může být prázdný).
     std::vector<Transition*> get_expired();
 
     /// Zruší všechny časovače pro daný přechod.

@@ -1,12 +1,4 @@
-/**
- * @file    event_queue.h
- * @brief   Fronta událostí pro event-driven smyčku interpretu.
- * @author  Lukáš
- * @date    2026-05-04
- *
- * Používá condition_variable pro blokující čekání – splňuje požadavek
- * "pasivně čekej" (žádné busy-waiting).
- */
+// event_queue.h
 
 #ifndef PETS_EVENT_QUEUE_H
 #define PETS_EVENT_QUEUE_H
@@ -20,18 +12,14 @@ namespace pets {
 
 class Transition;  // forward
 
-/**
- * @brief Typy událostí, na které může smyčka reagovat.
- */
+// @brief Typy událostí, na které může smyčka reagovat.
 enum class EventType {
     INPUT,      ///< Externí vstupní událost (GUI nastavilo hodnotu)
     TIMEOUT,    ///< Vypršel časovač zpožděného přechodu
     STOP        ///< Požadavek na ukončení interpretu
 };
 
-/**
- * @brief Jedna událost ve frontě.
- */
+// @brief Jedna událost ve frontě.
 struct Event {
     EventType type = EventType::STOP;
 
@@ -68,12 +56,10 @@ struct Event {
     }
 };
 
-/**
- * @brief Thread-safe fronta událostí s možností blokujícího čekání.
- *
- * Používá se v hlavní smyčce interpretu. wait() blokuje, dokud není
- * událost k dispozici. wait_for() čeká maximálně zadanou dobu.
- */
+// @brief Thread-safe fronta událostí s možností blokujícího čekání.
+// 
+// Používá se v hlavní smyčce interpretu. wait() blokuje, dokud není
+// událost k dispozici. wait_for() čeká maximálně zadanou dobu.
 class EventQueue {
 public:
     /// Vloží událost do fronty a probudí čekající vlákno.
@@ -82,12 +68,10 @@ public:
     /// Blokující čekání na další událost.
     Event wait();
 
-    /**
-     * @brief Blokující čekání s timeoutem.
-     * @param timeout_ms Maximální doba čekání v ms.
-     * @param out_event Výstupní událost (platná jen pokud návratová hodnota = true).
-     * @return true pokud událost nastala, false pokud vypršel timeout.
-     */
+    // @brief Blokující čekání s timeoutem.
+// @param timeout_ms Maximální doba čekání v ms.
+// @param out_event Výstupní událost (platná jen pokud návratová hodnota = true).
+// @return true pokud událost nastala, false pokud vypršel timeout.
     bool wait_for(int64_t timeout_ms, Event& out_event);
 
     /// Pokusí se neblokujícně vybrat událost.
